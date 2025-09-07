@@ -1,0 +1,52 @@
+# Bytecode y cachés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de base de datos locales
+*.db
+
+# Distribución / paquetes
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Archivos temporales / logs
+*.log
+*.pot
+*.mo
+
+# Herramientas
+.pytest_cache/
+.coverage
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints
+
+# Configs locales
+.env
+.envrc
+.vscode/
+.idea/
+
+# Documentación
+docs/_build/
+site/
+
+# PyBuilder
+.pybuilder/
+target/
