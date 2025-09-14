@@ -1,6 +1,5 @@
 from sqlalchemy import Integer, String, Boolean, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import date
 from Database import Base
 
 class Persona(Base):
