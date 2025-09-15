@@ -3,6 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date, time
 from .Database import Base
 
+
 class Persona(Base):
     __tablename__ = "personas"
 
@@ -34,6 +35,8 @@ class Turno(Base):
     persona_id: Mapped[int] = mapped_column(Integer, ForeignKey("personas.id"), nullable=False)
     # lo mismo que la otra linea pero en viceversa 
     persona = relationship("Persona", back_populates="turnos")
+
     fecha: Mapped[date] = mapped_column(Date, nullable=False)
     hora: Mapped[time] = mapped_column(Time, nullable=False)
     estado: Mapped[str] = mapped_column(String(20), nullable=False, default="pendiente")
+
