@@ -15,9 +15,7 @@ class Persona(Base):
     dni: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
     telefono: Mapped[str] = mapped_column(String(20), nullable=False)
     fecha_nacimiento: Mapped[date] = mapped_column(Date, nullable=False)
-    # para el tp no importa ya que no va a pasar mucho tiempo, pero lo ideal seria calcular la edad de manera dinamica,
-    #pero si lo hago usando una propiedad 'edad' dejaria de ser un atributo de la tabla propiamente dicho, preguntarle al profe
-    edad: Mapped[int] = mapped_column(Integer, nullable=False)
+    #edad se va a calcular en los endpoints de persona, no es necesario que sea un atributo
     # una vez que cancele 5 turnos se deshabilita a la persona
     habilitado: Mapped[bool] = mapped_column(Boolean, default=True)
 
