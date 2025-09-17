@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Request
-
 from .Database import Base, engine, get_db
-from .Models import Turno
-from datetime import date, time
+from .Models import Turno, Persona
+from datetime import date, time, datetime
+
 
 app = FastAPI(title="SL-UNLA-LAB-2025-GRUPO-03-API")
 
@@ -101,4 +101,162 @@ def eliminar_turno(id: int):
         raise HTTPException(status_code=404, detail="Turno no encontrado")
     db.delete(turno)
     db.commit()
+
     return {"ok": True, "mensaje": "Turno eliminado"}
+
+
+#Personas
+#Faltan mas validaciones 
+
+def calcular_edad(fecha_nacimiento: date) -> int:
+    hoy = date.today()
+    edad = hoy.year - fecha_nacimiento.year
+    if (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day):
+        edad -= 1
+    return edad
+
+
+# ABM Personas
+@app.post("/personas")
+async def crear_persona(request: Request):
+    datos = await request.json()
+    db = next(get_db())
+    
+    # Verifico si ya existe una persona con el mismo email o DNI
+    persona_existente = db.query(Persona).filter(
+        (Persona.email == datos["email"]) | (Persona.dni == datos["dni"])
+    ).first()
+    
+    if persona_existente:
+        raise HTTPException(status_code=400, detail="Ya existe una persona con este email o DNI")
+    
+    nueva_persona = Persona(
+        nombre=datos["nombre"],
+        email=datos["email"],
+        dni=datos["dni"],
+        telefono=datos["telefono"],
+        fecha_nacimiento=date.fromisoformat(datos["fecha_nacimiento"]),
+        habilitado=datos.get("habilitado", True)  # Por defecto habilitado
+    )
+    
+    db.add(nueva_persona)
+    db.commit()
+    db.refresh(nueva_persona)
+    
+    edad = calcular_edad(nueva_persona.fecha_nacimiento)
+    
+    return {
+        "id": nueva_persona.id,
+        "nombre": nueva_persona.nombre,
+        "email": nueva_persona.email,
+        "dni": nueva_persona.dni,
+        "telefono": nueva_persona.telefono,
+        "fecha_nacimiento": str(nueva_persona.fecha_nacimiento),
+        "edad": edad,
+        "habilitado": nueva_persona.habilitado
+    }
+
+
+@app.get("/personas")
+def listar_personas():
+    db = next(get_db())
+    personas = db.query(Persona).all()
+    return [
+        {
+            "id": p.id,
+            "nombre": p.nombre,
+            "email": p.email,
+            "dni": p.dni,
+            "telefono": p.telefono,
+            "fecha_nacimiento": str(p.fecha_nacimiento),
+            "edad": calcular_edad(p.fecha_nacimiento),
+            "habilitado": p.habilitado
+        }
+        for p in personas
+    ]
+
+
+@app.get("/personas/{id}")
+def obtener_persona(id: int):
+    db = next(get_db())
+    persona = db.query(Persona).filter(Persona.id == id).first()
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    
+    edad = calcular_edad(persona.fecha_nacimiento)
+    
+    return {
+        "id": persona.id,
+        "nombre": persona.nombre,
+        "email": persona.email,
+        "dni": persona.dni,
+        "telefono": persona.telefono,
+        "fecha_nacimiento": str(persona.fecha_nacimiento),
+        "edad": edad,
+        "habilitado": persona.habilitado
+    }
+
+
+@app.put("/personas/{id}")
+async def actualizar_persona(id: int, request: Request):
+    datos = await request.json()
+    db = next(get_db())
+    persona = db.query(Persona).filter(Persona.id == id).first()
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    
+    # Verificar si el email o DNI ya existen en otra persona
+    if "email" in datos or "dni" in datos:
+        email = datos.get("email", persona.email)
+        dni = datos.get("dni", persona.dni)
+        
+        persona_existente = db.query(Persona).filter(
+            Persona.id != id,
+            ((Persona.email == email) | (Persona.dni == dni))
+        ).first()
+        
+        if persona_existente:
+            raise HTTPException(status_code=400, detail="Ya existe otra persona con este email o DNI")
+    
+    # Actualizar campos
+    if "nombre" in datos:
+        persona.nombre = datos["nombre"]
+    if "email" in datos:
+        persona.email = datos["email"]
+    if "dni" in datos:
+        persona.dni = datos["dni"]
+    if "telefono" in datos:
+        persona.telefono = datos["telefono"]
+    if "fecha_nacimiento" in datos:
+        persona.fecha_nacimiento = date.fromisoformat(datos["fecha_nacimiento"])
+    if "habilitado" in datos:
+        persona.habilitado = datos["habilitado"]
+    
+    db.commit()
+    db.refresh(persona)
+    
+    edad = calcular_edad(persona.fecha_nacimiento)
+    
+    return {
+        "id": persona.id,
+        "nombre": persona.nombre,
+        "email": persona.email,
+        "dni": persona.dni,
+        "telefono": persona.telefono,
+        "fecha_nacimiento": str(persona.fecha_nacimiento),
+        "edad": edad,
+        "habilitado": persona.habilitado
+    }
+
+
+@app.delete("/personas/{id}")
+def eliminar_persona(id: int):
+    db = next(get_db())
+    persona = db.query(Persona).filter(Persona.id == id).first()
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+
+    db.delete(persona)
+    db.commit()
+    return {"ok": True, "mensaje": "Persona eliminada"}
+
