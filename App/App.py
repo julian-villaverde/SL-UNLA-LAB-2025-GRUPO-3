@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Request
-
 from .Database import Base, engine, get_db
 from .Models import Turno, Persona
 from datetime import date, time, datetime
+
 
 app = FastAPI(title="SL-UNLA-LAB-2025-GRUPO-03-API")
 
@@ -101,11 +101,12 @@ def eliminar_turno(id: int):
         raise HTTPException(status_code=404, detail="Turno no encontrado")
     db.delete(turno)
     db.commit()
+
     return {"ok": True, "mensaje": "Turno eliminado"}
 
 
 #Personas
-#Faltan validaciones
+#Faltan mas validaciones 
 
 def calcular_edad(fecha_nacimiento: date) -> int:
     hoy = date.today()
@@ -258,3 +259,4 @@ def eliminar_persona(id: int):
     db.delete(persona)
     db.commit()
     return {"ok": True, "mensaje": "Persona eliminada"}
+

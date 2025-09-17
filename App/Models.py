@@ -31,6 +31,7 @@ class Turno(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     #evita que se creen turnos con id's de personas inexistentes, si borro la persona tambien tengo que borrar los turnos o nos va a dar error,habria que automatizar que se borren los turnos con las personas
     persona_id: Mapped[int] = mapped_column(Integer, ForeignKey("personas.id", ondelete="CASCADE"), nullable=False)
+
     # lo mismo que la otra linea pero en viceversa 
     persona = relationship("Persona", back_populates="turnos")
 
