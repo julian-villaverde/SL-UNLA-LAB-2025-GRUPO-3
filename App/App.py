@@ -104,6 +104,49 @@ def eliminar_turno(id: int):
 
     return {"ok": True, "mensaje": "Turno eliminado"}
 
+#Endpoint - Cálculo de turnos disponibles
+@app.get("/turnos-disponibles")
+def obtener_turnos_disponibles(fecha: str):
+    db = next(get_db())
+    try:
+        fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD")
+    
+    #se generan todos los intervalos de 9:00 a 17:00 cada 30 minutos
+    hora_inicio = time(9, 0)
+    hora_fin = time(17, 0)
+    intervalos = []
+    current = datetime.combine(fecha_dt, hora_inicio)
+    while current.time() <= hora_fin:
+        intervalos.append(current.strftime("%H:%M"))
+        current += timedelta(minutes=30)
+
+    #consulta los turnos existentes para esa fecha
+    turnos_existentes = db.query(Turno).filter(Turno.fecha == fecha_dt).all()
+
+    #turnos ocupados (cualquier estado menos cancelado)
+    ocupados = [t.hora.strftime("%H:%M") for t in turnos_existentes if t.estado != "cancelado"]
+
+    #hacemos el cálculo de los turnos que estan disponibles
+    disponibles = []
+    for idx, h in enumerate(intervalos):
+        if h not in ocupados:
+            disponibles.append(h)
+        else:
+            #si está ocupado, dejamos disponibles sus adyacentes
+            if idx > 0 and intervalos[idx - 1] not in ocupados:
+                if intervalos[idx - 1] not in disponibles:
+                    disponibles.append(intervalos[idx - 1])
+            if idx < len(intervalos) - 1 and intervalos[idx + 1] not in ocupados:
+                if intervalos[idx + 1] not in disponibles:
+                    disponibles.append(intervalos[idx + 1])
+
+    #respuesta del Endpoint
+    return {
+        "fecha": fecha,
+        "horarios_disponibles": sorted(disponibles)
+    }
 
 #Personas
 #Faltan mas validaciones 
