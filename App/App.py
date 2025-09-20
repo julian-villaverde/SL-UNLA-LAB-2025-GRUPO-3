@@ -146,7 +146,7 @@ def obtener_turnos_disponibles(fecha: str):
     return {
         "fecha": fecha,
         "horarios_disponibles": sorted(disponibles)
-    }
+    } 
 
 #Personas
 #Faltan mas validaciones 
