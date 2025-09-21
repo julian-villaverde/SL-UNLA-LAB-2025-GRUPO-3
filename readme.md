@@ -18,4 +18,22 @@ App/
 ── Requirements.txt 
 ── Database.db      
 
+### Julian Villaverde
+GET /
+Verifica funcionamiento de la API.
 
+POST /personas
+GET /personas
+GET /personas/{id}
+PUT /personas/{id}
+DELETE /personas/{id}
+
+### Agustin Torres Valenzuela
+POST /turnos
+GET /turnos
+GET /turnos/{id}
+PUT /turnos/{id}
+DELETE /turnos/{id}
+
+### Valentin Mesa
+GET /turnos-disponibles?fecha=YYYY-MM-DD
