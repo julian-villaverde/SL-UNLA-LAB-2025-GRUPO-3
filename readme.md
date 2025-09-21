@@ -4,7 +4,7 @@ Coleccion Postman: https://www.postman.com/julianagustinvillaverde-2391323/works
 
 Julian Villaverde
 Valentin Mesa
-
+Agustin Torres Valenzuela
 
 
 --Estructura
@@ -21,18 +21,18 @@ App/
 GET /
 Verifica funcionamiento de la API.
 
-POST /personas
-GET /personas
-GET /personas/{id}
-PUT /personas/{id}
-DELETE /personas/{id}
+- POST /personas
+- GET /personas
+- GET /personas/{id}
+- PUT /personas/{id}
+- DELETE /personas/{id}
 
 ### Agustin Torres Valenzuela
-POST /turnos
-GET /turnos
-GET /turnos/{id}
-PUT /turnos/{id}
-DELETE /turnos/{id}
+- POST /turnos
+- GET /turnos
+- GET /turnos/{id}
+- PUT /turnos/{id}
+- DELETE /turnos/{id}
 
 ### Valentin Mesa
-GET /turnos-disponibles?fecha=YYYY-MM-DD
+- GET /turnos-disponibles?fecha=YYYY-MM-DD
