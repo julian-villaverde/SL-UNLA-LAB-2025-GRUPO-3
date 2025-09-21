@@ -24,7 +24,7 @@ def al_iniciar() -> None:
 #Faltan validaciones:
 #Ingreso de datos(usar pydantic) y reglas de negocio
 
-#Validacion de Turnos (Ingreso de datos)
+#Validacion de Turnos(Ingreso de datos)
 class turno_base(BaseModel):
     persona_id: int = Field(..., gt=0, description="ID de la persona que solicita el turno")
     fecha: date
