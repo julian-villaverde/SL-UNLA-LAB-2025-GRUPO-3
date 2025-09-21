@@ -21,9 +21,6 @@ def al_iniciar() -> None:
 
 
 # ABM Turnos
-#Faltan validaciones:
-#Ingreso de datos(usar pydantic) y reglas de negocio
-
 #Validacion de Turnos(Ingreso de datos)
 class turno_base(BaseModel):
     persona_id: int = Field(..., gt=0, description="ID de la persona que solicita el turno")
@@ -73,8 +70,24 @@ class actualizar_turno(BaseModel):
 async def crear_turno(request: Request):
     datos = await request.json()
     db = next(get_db())
+
+    # no permitir si tiene 5 o más cancelados en últimos 6 meses
+    persona_id = datos["persona_id"]
+    fecha_actual = date.today()
+    fecha_limite = fecha_actual - timedelta(days=180)
+    turnos_cancelados = db.query(Turno).filter(
+        Turno.persona_id == persona_id,
+        Turno.estado == "cancelado",
+        Turno.fecha >= fecha_limite
+    ).count()
+    if turnos_cancelados >= 5:
+        raise HTTPException(
+            status_code=400,
+            detail="No se puede asignar turno: la persona tiene 5 o más turnos cancelados en los últimos 6 meses."
+        )
+
     nuevo_turno = Turno(
-        persona_id=datos["persona_id"],
+        persona_id=persona_id,
         fecha=date.fromisoformat(datos["fecha"]),
         hora=time.fromisoformat(datos["hora"])
         # estado definido como default "pendiente" en models.py
@@ -198,7 +211,6 @@ def obtener_turnos_disponibles(fecha: str):
 
 
 # ABM Personas
-#Faltan validaciones
 
 def validar_email(email: str) -> str:
     try:
