@@ -19,8 +19,6 @@ def al_iniciar() -> None:
 
 
 # ABM Turnos
-#Faltan validaciones:
-#Ingreso de datos(usar pydantic)
 @app.post("/turnos")
 async def crear_turno(request: Request):
     datos = await request.json()
@@ -166,7 +164,6 @@ def obtener_turnos_disponibles(fecha: str):
 
 
 # ABM Personas
-#Faltan validaciones
 
 def validar_email(email: str) -> str:
     try:
