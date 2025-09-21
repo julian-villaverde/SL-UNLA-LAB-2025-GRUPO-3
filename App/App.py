@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, Request
-
 from .Database import Base, engine, get_db
 from .Models import Turno, Persona
-from datetime import date, time, datetime
+from datetime import date, time, datetime, timedelta
 from email_validator import validate_email, EmailNotValidError
+
 
 app = FastAPI(title="SL-UNLA-LAB-2025-GRUPO-03-API")
 
@@ -18,8 +18,7 @@ def al_iniciar() -> None:
     Base.metadata.create_all(bind=engine)
 
 
-
-#ABM Turnos
+# ABM Turnos
 #Faltan validaciones:
 #Ingreso de datos(usar pydantic) y reglas de negocio
 @app.post("/turnos")
@@ -105,7 +104,52 @@ def eliminar_turno(id: int):
     return {"ok": True, "mensaje": "Turno eliminado"}
 
 
-#Personas
+# Endpoint - Cálculo de turnos disponibles
+@app.get("/turnos-disponibles")
+def obtener_turnos_disponibles(fecha: str):
+    db = next(get_db())
+    try:
+        fecha_dt = datetime.strptime(fecha, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Formato de fecha inválido. Use YYYY-MM-DD")
+    
+    #se generan todos los intervalos de 9:00 a 17:00 cada 30 minutos
+    hora_inicio = time(9, 0)
+    hora_fin = time(17, 0)
+    intervalos = []
+    current = datetime.combine(fecha_dt, hora_inicio)
+    while current.time() <= hora_fin:
+        intervalos.append(current.strftime("%H:%M"))
+        current += timedelta(minutes=30)
+
+    #consulta los turnos existentes para esa fecha
+    turnos_existentes = db.query(Turno).filter(Turno.fecha == fecha_dt).all()
+
+    #turnos ocupados (cualquier estado menos cancelado)
+    ocupados = [t.hora.strftime("%H:%M") for t in turnos_existentes if t.estado != "cancelado"]
+
+    #hacemos el cálculo de los turnos que estan disponibles
+    disponibles = []
+    for idx, h in enumerate(intervalos):
+        if h not in ocupados:
+            disponibles.append(h)
+        else:
+            #si está ocupado, dejamos disponibles sus adyacentes
+            if idx > 0 and intervalos[idx - 1] not in ocupados:
+                if intervalos[idx - 1] not in disponibles:
+                    disponibles.append(intervalos[idx - 1])
+            if idx < len(intervalos) - 1 and intervalos[idx + 1] not in ocupados:
+                if intervalos[idx + 1] not in disponibles:
+                    disponibles.append(intervalos[idx + 1])
+
+    #respuesta del Endpoint
+    return {
+        "fecha": fecha,
+        "horarios_disponibles": sorted(disponibles)
+    }
+
+
+# ABM Personas
 #Faltan validaciones
 
 def validar_email(email: str) -> str:
@@ -113,16 +157,17 @@ def validar_email(email: str) -> str:
         valid_email = validate_email(email)
         return valid_email.email  
     except EmailNotValidError as e:
-        # Personalizar mensajes en español
+
+#los errores por default estan en ingles, aca cambio el idioma
         error_msg = str(e).lower()
         if "must have an @-sign" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El email debe tener un símbolo @")
+            raise HTTPException(status_code=400, detail="email invalido: El email debe tener un simbolo @")
         elif "must be something after the @-sign" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo después del símbolo @")
+            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo después del simbolo @")
         elif "domain" in error_msg and "invalid" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El dominio del email no es válido")
+            raise HTTPException(status_code=400, detail="email invalido: El dominio del email no es valido")
         elif "local part" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: La parte local del email (antes del @) no es válida")
+            raise HTTPException(status_code=400, detail="email invalido: La parte local del email (antes del @) no es valida")
         elif "too long" in error_msg:
             raise HTTPException(status_code=400, detail="email invalido: El email es demasiado largo")
         elif "empty" in error_msg:
@@ -138,7 +183,6 @@ def calcular_edad(fecha_nacimiento: date) -> int:
     return edad
 
 
-# ABM Personas
 @app.post("/personas")
 async def crear_persona(request: Request):
     datos = await request.json()
