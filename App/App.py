@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Request
 from .Database import Base, engine, get_db
 from .Models import Turno, Persona
 from datetime import date, time, datetime
+from email_validator import validate_email, EmailNotValidError
 
 app = FastAPI(title="SL-UNLA-LAB-2025-GRUPO-03-API")
 
@@ -107,6 +108,28 @@ def eliminar_turno(id: int):
 #Personas
 #Faltan validaciones
 
+def validar_email(email: str) -> str:
+    try:
+        valid_email = validate_email(email)
+        return valid_email.email  
+    except EmailNotValidError as e:
+        # Personalizar mensajes en español
+        error_msg = str(e).lower()
+        if "must have an @-sign" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: El email debe tener un símbolo @")
+        elif "must be something after the @-sign" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo después del símbolo @")
+        elif "domain" in error_msg and "invalid" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: El dominio del email no es válido")
+        elif "local part" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: La parte local del email (antes del @) no es válida")
+        elif "too long" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: El email es demasiado largo")
+        elif "empty" in error_msg:
+            raise HTTPException(status_code=400, detail="email invalido: El email no puede estar vacío")
+        else:
+            raise HTTPException(status_code=400, detail=f"email invalido: {str(e)}")
+
 def calcular_edad(fecha_nacimiento: date) -> int:
     hoy = date.today()
     edad = hoy.year - fecha_nacimiento.year
@@ -120,18 +143,21 @@ def calcular_edad(fecha_nacimiento: date) -> int:
 async def crear_persona(request: Request):
     datos = await request.json()
     db = next(get_db())
-    
-    # Verifico si ya existe una persona con el mismo email o DNI
+
+    # Validar y normalizar email
+    email_normalizado = validar_email(datos["email"])
+
+    # me fijo si ya existe una persona con el mismo email o DNI
     persona_existente = db.query(Persona).filter(
-        (Persona.email == datos["email"]) | (Persona.dni == datos["dni"])
+        (Persona.email == email_normalizado) | (Persona.dni == datos["dni"])
     ).first()
-    
+
     if persona_existente:
         raise HTTPException(status_code=400, detail="Ya existe una persona con este email o DNI")
-    
+
     nueva_persona = Persona(
         nombre=datos["nombre"],
-        email=datos["email"],
+        email=email_normalizado,
         dni=datos["dni"],
         telefono=datos["telefono"],
         fecha_nacimiento=date.fromisoformat(datos["fecha_nacimiento"]),
@@ -204,24 +230,29 @@ async def actualizar_persona(id: int, request: Request):
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
     
+    # Validar email si se está actualizando
+    email_normalizado = None
+    if "email" in datos:
+        email_normalizado = validar_email(datos["email"])
+
     # Verificar si el email o DNI ya existen en otra persona
     if "email" in datos or "dni" in datos:
-        email = datos.get("email", persona.email)
+        email = email_normalizado if email_normalizado else persona.email
         dni = datos.get("dni", persona.dni)
-        
+
         persona_existente = db.query(Persona).filter(
             Persona.id != id,
             ((Persona.email == email) | (Persona.dni == dni))
         ).first()
-        
+
         if persona_existente:
             raise HTTPException(status_code=400, detail="Ya existe otra persona con este email o DNI")
-    
+
     # Actualizar campos
     if "nombre" in datos:
         persona.nombre = datos["nombre"]
     if "email" in datos:
-        persona.email = datos["email"]
+        persona.email = email_normalizado
     if "dni" in datos:
         persona.dni = datos["dni"]
     if "telefono" in datos:
