@@ -28,14 +28,14 @@ class turno_base(BaseModel):
     hora: time
     estado: Optional[str] = "pendiente"
 
-    @validador("estado")
+    @validator("estado")
     def validar_estado(cls, v):
         estados_validos = ["pendiente", "cancelado", "confirmado", "asistido"]
         if v not in estados_validos:
             raise ValueError(f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}")
         return v
 
-    @validador("hora")
+    @validator("hora")
     def validar_horario(cls, v):
         if not (time(9, 0) <= v <= time(17, 0)):
             raise ValueError("La hora debe estar entre 09:00 y 17:00")
@@ -48,7 +48,7 @@ class actualizar_turno(BaseModel):
     hora: Optional[time]
     estado: Optional[str]
 
-    @validador("estado")
+    @validator("estado")
     def validar_estado(cls, v):
         if v:
             estados_validos = ["pendiente", "cancelado", "confirmado", "asistido"]
@@ -56,7 +56,7 @@ class actualizar_turno(BaseModel):
                 raise ValueError(f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}")
         return v
 
-    @validador("hora")
+    @validator("hora")
     def validar_horario(cls, v):
         if v:
             if not (time(9, 0) <= v <= time(17, 0)):
