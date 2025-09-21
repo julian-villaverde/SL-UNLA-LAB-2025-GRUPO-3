@@ -24,6 +24,7 @@ class Persona(Base):
 
 class Turno(Base):
     __tablename__ = "turnos"
+
     #implementa una restricción para que no se puedan crear turnos con la misma fecha y hora
     __table_args__ = (UniqueConstraint("fecha", "hora", name="uq_fecha_hora"),)
 
