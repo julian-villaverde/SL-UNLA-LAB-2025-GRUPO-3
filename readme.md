@@ -2,6 +2,7 @@
 
 --documentacion:
 Coleccion Postman: https://www.postman.com/julianagustinvillaverde-2391323/workspace/grupo03/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537
+
 --Integrantes
 
 Julian Villaverde
@@ -20,6 +21,8 @@ App/
 ── Database.db      
 
 ### Julian Villaverde
+-Creacion de la documentacion y testeo en postman
+
 GET /
 Verifica funcionamiento de la API.
 
@@ -28,7 +31,7 @@ Verifica funcionamiento de la API.
 - GET /personas/{id}
 - PUT /personas/{id}
 - DELETE /personas/{id}
-
+(verificaciones incluidas)
 ### Agustin Torres Valenzuela
 - POST /turnos
 - GET /turnos
