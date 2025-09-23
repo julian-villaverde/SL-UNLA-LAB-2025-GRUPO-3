@@ -356,12 +356,12 @@ async def actualizar_persona(id: int, request: Request):
     if "fecha_nacimiento" in datos:
         raise HTTPException(status_code=400, detail="No se permite modificar la fecha de nacimiento de una persona")
     
-    # Validar email si se está actualizando
+    
     email_normalizado = None
     if "email" in datos:
         email_normalizado = validar_email(datos["email"])
 
-    # Verificar si el email, DNI o teléfono ya existen en otra persona
+    # Verifico si el email, DNI o telefono ya existen en otra persona
     if "email" in datos or "dni" in datos or "telefono" in datos:
         email = email_normalizado if email_normalizado else persona.email
         dni = datos.get("dni", persona.dni)
@@ -375,7 +375,7 @@ async def actualizar_persona(id: int, request: Request):
         if persona_existente:
             raise HTTPException(status_code=400, detail="Ya existe otra persona con este email, DNI o telefono")
 
-    # Actualizar campos
+    # actualizar campos
     if "nombre" in datos:
         persona.nombre = datos["nombre"]
     if "email" in datos:
