@@ -165,6 +165,9 @@ def eliminar_turno(id: int):
     return {"ok": True, "mensaje": "Turno eliminado"}
 
 
+ 
+
+
 # Endpoint - Cálculo de turnos disponibles
 @app.get("/turnos-disponibles")
 def obtener_turnos_disponibles(fecha: str):
@@ -223,7 +226,7 @@ def validar_email(email: str) -> str:
         if "must have an @-sign" in error_msg:
             raise HTTPException(status_code=400, detail="email invalido: El email debe tener un simbolo @")
         elif "must be something after the @-sign" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo después del simbolo @")
+            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo despues del simbolo @")
         elif "domain" in error_msg and "invalid" in error_msg:
             raise HTTPException(status_code=400, detail="email invalido: El dominio del email no es valido")
         elif "local part" in error_msg:
@@ -231,7 +234,7 @@ def validar_email(email: str) -> str:
         elif "too long" in error_msg:
             raise HTTPException(status_code=400, detail="email invalido: El email es demasiado largo")
         elif "empty" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El email no puede estar vacío")
+            raise HTTPException(status_code=400, detail="email invalido: El email no puede estar vacio")
         else:
             raise HTTPException(status_code=400, detail=f"email invalido: {str(e)}")
 
@@ -251,21 +254,36 @@ async def crear_persona(request: Request):
     # Validar y normalizar email
     email_normalizado = validar_email(datos["email"])
 
-    # me fijo si ya existe una persona con el mismo email o DNI
+    # me fijo si ya existe una persona con el mismo email, DNI o teléfono
     persona_existente = db.query(Persona).filter(
-        (Persona.email == email_normalizado) | (Persona.dni == datos["dni"])
+        (Persona.email == email_normalizado) | (Persona.dni == datos["dni"]) | (Persona.telefono == datos["telefono"])
     ).first()
 
     if persona_existente:
-        raise HTTPException(status_code=400, detail="Ya existe una persona con este email o DNI")
+        raise HTTPException(status_code=400, detail="Ya existe una persona con este email, DNI o telefono")
+
+    # Validar fecha de nacimiento
+    try:
+        fecha_nac = date.fromisoformat(datos["fecha_nacimiento"])  # YYYY-MM-DD
+    except (KeyError, ValueError):
+        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida. Formato esperado YYYY-MM-DD")
+
+    # Reglas adicionales: no futura y no mayor a 120 años
+    hoy = date.today()
+    if fecha_nac > hoy:
+        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida: no puede ser futura")
+    limite_antiguedad = date(hoy.year - 120, hoy.month, hoy.day)
+    if fecha_nac < limite_antiguedad:
+        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida: no puede superar 120 anios")
 
     nueva_persona = Persona(
         nombre=datos["nombre"],
         email=email_normalizado,
         dni=datos["dni"],
         telefono=datos["telefono"],
-        fecha_nacimiento=date.fromisoformat(datos["fecha_nacimiento"]),
-        habilitado=datos.get("habilitado", True)  # Por defecto habilitado
+        fecha_nacimiento=fecha_nac,
+        # Siempre por defecto habilitado 
+        habilitado=True
     )
     
     db.add(nueva_persona)
@@ -333,24 +351,29 @@ async def actualizar_persona(id: int, request: Request):
     persona = db.query(Persona).filter(Persona.id == id).first()
     if not persona:
         raise HTTPException(status_code=404, detail="Persona no encontrada")
+    if "dni" in datos:
+        raise HTTPException(status_code=400, detail="No se permite modificar el DNI de una persona")
+    if "fecha_nacimiento" in datos:
+        raise HTTPException(status_code=400, detail="No se permite modificar la fecha de nacimiento de una persona")
     
     # Validar email si se está actualizando
     email_normalizado = None
     if "email" in datos:
         email_normalizado = validar_email(datos["email"])
 
-    # Verificar si el email o DNI ya existen en otra persona
-    if "email" in datos or "dni" in datos:
+    # Verificar si el email, DNI o teléfono ya existen en otra persona
+    if "email" in datos or "dni" in datos or "telefono" in datos:
         email = email_normalizado if email_normalizado else persona.email
         dni = datos.get("dni", persona.dni)
+        telefono = datos.get("telefono", persona.telefono)
 
         persona_existente = db.query(Persona).filter(
             Persona.id != id,
-            ((Persona.email == email) | (Persona.dni == dni))
+            ((Persona.email == email) | (Persona.dni == dni) | (Persona.telefono == telefono))
         ).first()
 
         if persona_existente:
-            raise HTTPException(status_code=400, detail="Ya existe otra persona con este email o DNI")
+            raise HTTPException(status_code=400, detail="Ya existe otra persona con este email, DNI o telefono")
 
     # Actualizar campos
     if "nombre" in datos:
@@ -361,10 +384,24 @@ async def actualizar_persona(id: int, request: Request):
         persona.dni = datos["dni"]
     if "telefono" in datos:
         persona.telefono = datos["telefono"]
-    if "fecha_nacimiento" in datos:
-        persona.fecha_nacimiento = date.fromisoformat(datos["fecha_nacimiento"])
+    
     if "habilitado" in datos:
-        persona.habilitado = datos["habilitado"]
+        nuevo_estado_habilitado = datos["habilitado"]
+        if nuevo_estado_habilitado is False:
+            # Verificar 5 cancelaciones en los últimos 6 meses antes de deshabilitar
+            fecha_actual = date.today()
+            fecha_limite = fecha_actual - timedelta(days=180)
+            turnos_cancelados = db.query(Turno).filter(
+                Turno.persona_id == persona.id,
+                Turno.estado == "cancelado",
+                Turno.fecha >= fecha_limite
+            ).count()
+            if turnos_cancelados < 5:
+                raise HTTPException(
+                    status_code=400,
+                    detail="No se puede deshabilitar: la persona no tiene al menos 5 turnos cancelados en los ultimos 6 meses"
+                )
+        persona.habilitado = nuevo_estado_habilitado
     
     db.commit()
     db.refresh(persona)
