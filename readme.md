@@ -40,8 +40,8 @@ Verifica funcionamiento de la API.
 
 ## Gabriela Pedicino
 - Validaciones (Personas, Turnos) (Julian, Valentin)
-- Validador de Emails (Agustin)
-- Reglas de negocio (Turnos) (Julian)
+- Validador de Emails (Julian)
+- Reglas de negocio (Turnos) (Agustin)
   
 ### - NOTA: Gabriela abandona la cursada, sus tareas fueron repartidas entre los miembros restantes
 
