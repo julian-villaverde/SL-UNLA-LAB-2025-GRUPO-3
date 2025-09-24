@@ -1,0 +1,754 @@
+{
+	"info": {
+		"_postman_id": "f7a9a0fd-cfe4-46c7-a798-e079e0270547",
+		"name": "SL-UNLA-LAB-GRUPO-3",
+		"description": "Link de invitacion: [https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&amp;creator=48509537](https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537)\n\nAlgo a notar es que por ej :",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48472285",
+		"_collection_link": "https://www.postman.com/julianagustinvillaverde-2391323/grupo03/collection/crfnavc/sl-unla-lab-grupo-3?action=share&source=collection_link&creator=48472285"
+	},
+	"item": [
+		{
+			"name": "Personas",
+			"item": [
+				{
+					"name": "POST",
+					"item": [
+						{
+							"name": "casos mails invalidos",
+							"item": [
+								{
+									"name": "caso email sin arroba",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"nombre\": \"Juan Perez\",\r\n  \"email\": \"email-sin-arroba\",\r\n  \"dni\": \"12345678\",\r\n  \"telefono\": \"1122334455\",\r\n  \"fecha_nacimiento\": \"1990-05-20\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "caso email sin mail despues del @(dominio)",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"nombre\": \"Maria Lopez\",\r\n  \"email\": \"maria@\",\r\n  \"dni\": \"87654321\",\r\n  \"telefono\": \"9988776655\",\r\n  \"fecha_nacimiento\": \"1985-03-15\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "normalizar email(deberia funcionar)",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"nombre\": \"Carlos Ruiz\",\r\n  \"email\": \"CARLOS@GMAIL.COM\",\r\n  \"dni\": \"11223344\",\r\n  \"telefono\": \"5544332211\",\r\n  \"fecha_nacimiento\": \"1992-08-10\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "normalizar el mail solo hace que la parte despues del @ cambie\n\nEJ:  \nNO normalizado: [CARLOS@GMAIL.COM](https://mailto:CARLOS@GMAIL.COM)\n\nNormalizado: [CARLOS@gmail.com](https://mailto:CARLOS@gmail.com)"
+						},
+						{
+							"name": "crear persona",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"Pedro Perez\",\r\n  \"email\": \"pepito@gmail.com\",\r\n  \"dni\": \"12345678\",\r\n  \"telefono\": \"1122334455\",\r\n  \"fecha_nacimiento\": \"1990-05-20\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/personas",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"personas"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PUT",
+					"item": [
+						{
+							"name": "Casos invalidos PUT",
+							"item": [
+								{
+									"name": "si no tiene 5 turnos cancelados",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas/1",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Error DNI",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas/1",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas",
+												"1"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Error fecha de nacimiento",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas/1",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas",
+												"1"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "/personas/{id}",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/personas/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"personas",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET",
+					"item": [
+						{
+							"name": "/personas",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:8000/personas",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"personas"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/personas/{id}",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/personas/1\n",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"personas",
+										"1\n"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "personas/{id}",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/personas/1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"personas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "_**\\-----Testeo de endpoints de personas (basico)-----**_\n\n**\\--POST:**  \n\\-Sirve para crear una persona, que no se repita el dni o el mail sino les salta error  \n\\-En body ingresan los parametros para crear las personas\n\n**\\--GET/personas:** Muestra todas las personas existentes, no requiere ningun tipo de parametro\n\n**\\--GET/personas/{id}:** Muestra una persona especifica segun el numero de {id}\n\n**\\--PUT:** Actualiza los campos de una persona ya existente, se ingresan los datos en body\n\n**\\--DEL:** Borra una persona especifica segun el numero de {id}"
+		},
+		{
+			"name": "Turnos",
+			"item": [
+				{
+					"name": "Casos validos",
+					"item": [
+						{
+							"name": "POST /turnos (valido)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:00:00\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /turnos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /turnos/{id}",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Casos invalidos",
+					"item": [
+						{
+							"name": "POST /turnos hora fuera de rango",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"08:30:00\"\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /turnos intervalo no 30 min",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:15:00\"\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /turnos fecha invalida",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-13-40\",\r\n  \"hora\": \"09:00:00\"\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Actualizar turno",
+					"item": [
+						{
+							"name": "PUT /turnos/{id} confirmar",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:00:00\",\r\n  \"estado\": \"confirmado\"\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /turnos/{id} cancelar",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:00:00\",\r\n  \"estado\": \"cancelado\"\r\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Eliminar turno",
+					"item": [
+						{
+							"name": "DELETE /turnos/{id}",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Turnos disponibles",
+					"item": [
+						{
+							"name": "GET /turnos-disponibles?fecha=YYYY-MM-DD",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos-disponibles?fecha=2025-10-01",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos-disponibles"
+									],
+									"query": [
+										{
+											"key": "fecha",
+											"value": "2025-10-01"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "Testeo de endpoints de turnos. Casos validos e invalidos: validacion de hora (9 a 17), intervalos de 30 minutos, formato de fecha. Para contar cancelaciones usar PUT /turnos/{id} con estado=cancelado."
+		}
+	],
+	"variable": [
+		{
+			"key": "fechaBase",
+			"value": ""
+		},
+		{
+			"key": "hora1",
+			"value": ""
+		},
+		{
+			"key": "hora2",
+			"value": ""
+		},
+		{
+			"key": "hora3",
+			"value": ""
+		},
+		{
+			"key": "hora4",
+			"value": ""
+		},
+		{
+			"key": "hora5",
+			"value": ""
+		},
+		{
+			"key": "personaId",
+			"value": ""
+		}
+	]
+}
