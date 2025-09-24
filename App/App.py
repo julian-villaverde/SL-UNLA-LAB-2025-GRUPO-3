@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from .Database import Base, engine, get_db
 from .Models import Turno, Persona
 from datetime import date, time, datetime, timedelta
@@ -67,12 +67,10 @@ class actualizar_turno(BaseModel):
 
 
 @app.post("/turnos")
-async def crear_turno(request: Request):
-    datos = await request.json()
-    db = next(get_db())
+async def crear_turno(turno_data: turno_base, db = Depends(get_db)):
 
     # no permitir si tiene 5 o más cancelados en últimos 6 meses
-    persona_id = datos["persona_id"]
+    persona_id = turno_data.persona_id
     fecha_actual = date.today()
     fecha_limite = fecha_actual - timedelta(days=180)
     turnos_cancelados = db.query(Turno).filter(
@@ -80,17 +78,34 @@ async def crear_turno(request: Request):
         Turno.estado == "cancelado",
         Turno.fecha >= fecha_limite
     ).count()
+    
     if turnos_cancelados >= 5:
+        persona = db.query(Persona).filter(Persona.id == persona_id).first()
+        if persona and persona.habilitado:
+            persona.habilitado = False
+            db.commit()
+
         raise HTTPException(
             status_code=400,
             detail="No se puede asignar turno: la persona tiene 5 o más turnos cancelados en los últimos 6 meses."
         )
 
+    persona = db.query(Persona).filter(Persona.id == persona_id).first()
+    if not persona:
+        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    
+    if not persona.habilitado:
+        raise HTTPException(status_code=400, detail="La persona está deshabilitada")
+    
+    # Validar que la fecha no sea pasada
+    if turno_data.fecha < date.today():
+        raise HTTPException(status_code=400, detail="No se pueden crear turnos en fechas pasadas")
+        
     nuevo_turno = Turno(
         persona_id=persona_id,
-        fecha=date.fromisoformat(datos["fecha"]),
-        hora=time.fromisoformat(datos["hora"])
-        # estado definido como default "pendiente" en models.py
+        fecha=turno_data.fecha,
+        hora=turno_data.hora,
+        estado=turno_data.estado
     )
     db.add(nuevo_turno)
     db.commit()
@@ -105,8 +120,7 @@ async def crear_turno(request: Request):
     }
 
 @app.get("/turnos")
-def listar_turnos():
-    db = next(get_db())
+def listar_turnos(db = Depends(get_db)):
     turnos = db.query(Turno).all()
     return [
         {
@@ -120,8 +134,7 @@ def listar_turnos():
     ]
 
 @app.get("/turnos/{id}")
-def obtener_turno(id: int):
-    db = next(get_db())
+def obtener_turno(id: int, db = Depends(get_db)):
     turno = db.query(Turno).filter(Turno.id == id).first()
     if not turno:
         raise HTTPException(status_code=404, detail="Turno no encontrado")
@@ -134,18 +147,26 @@ def obtener_turno(id: int):
     }
 
 @app.put("/turnos/{id}")
-async def actualizar_turno(id: int, request: Request):
-    datos = await request.json()
-    db = next(get_db())
+async def actualizar_turno(id: int, turno_data: actualizar_turno, db = Depends(get_db)):
     turno = db.query(Turno).filter(Turno.id == id).first()
     if not turno:
         raise HTTPException(status_code=404, detail="Turno no encontrado")
-    turno.persona_id = datos["persona_id"]
-    turno.fecha = date.fromisoformat(datos["fecha"])
-    turno.hora = time.fromisoformat(datos["hora"])
-    turno.estado = datos["estado"]
+    
+    if turno_data.fecha is not None:
+        # Validar que la fecha no sea pasada
+        if turno_data.fecha < date.today():
+            raise HTTPException(status_code=400, detail="No se pueden asignar fechas pasadas")
+        turno.fecha = turno_data.fecha
+    
+    if turno_data.hora is not None:
+        turno.hora = turno_data.hora
+    
+    if turno_data.estado is not None:
+        turno.estado = turno_data.estado
+    
     db.commit()
     db.refresh(turno)
+    
     return {
         "id": turno.id,
         "persona_id": turno.persona_id,
@@ -155,8 +176,7 @@ async def actualizar_turno(id: int, request: Request):
     }
 
 @app.delete("/turnos/{id}")
-def eliminar_turno(id: int):
-    db = next(get_db())
+def eliminar_turno(id: int, db = Depends(get_db)):
     turno = db.query(Turno).filter(Turno.id == id).first()
     if not turno:
         raise HTTPException(status_code=404, detail="Turno no encontrado")
