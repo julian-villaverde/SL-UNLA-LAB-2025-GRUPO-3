@@ -39,7 +39,7 @@ Verifica funcionamiento de la API.
 - GET /turnos-disponibles?fecha=YYYY-MM-DD
 
 ## Gabriela Pedicino
-- Validaciones (Personas, Turnos) (Julian, Valentin)
+- Validaciones (Personas, Turnos) (Julian, Valentin, Agustin)
 - Validador de Emails (Julian)
 - Reglas de negocio (Turnos) (Agustin)
   
