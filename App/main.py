@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException, Request, Depends
-from .Database import Base, engine, get_db
-from .Models import Turno, Persona
 from datetime import date, time, datetime, timedelta
-from email_validator import validate_email, EmailNotValidError
-from pydantic import BaseModel, Field, validator
-from typing import Optional
+
+from .schemas import turno_base, actualizar_turno
+from .crud import verificar_persona_existente
+from .database import Base, engine
+from .models import Turno, Persona
+from .utils import get_db, buscar_persona, buscar_turno, validar_turnos_cancelados, validar_persona_habilitada, validar_fecha_pasada, validar_email, calcular_edad, validar_formato_fecha, validar_fecha_nacimiento
 
 
 app = FastAPI(title="SL-UNLA-LAB-2025-GRUPO-03-API")
@@ -16,90 +17,20 @@ def inicio():
 
 
 @app.on_event("startup")
-def al_iniciar() -> None:
+def al_iniciar():
     Base.metadata.create_all(bind=engine)
 
 
 # ABM Turnos
-#Validacion de Turnos(Ingreso de datos)
-class turno_base(BaseModel):
-    persona_id: int = Field(..., gt=0, description="ID de la persona que solicita el turno")
-    fecha: date
-    hora: time
-    estado: Optional[str] = "pendiente"
-
-    @validator("estado")
-    def validar_estado(cls, v):
-        estados_validos = ["pendiente", "cancelado", "confirmado", "asistido"]
-        if v not in estados_validos:
-            raise ValueError(f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}")
-        return v
-
-    @validator("hora")
-    def validar_horario(cls, v):
-        if not (time(9, 0) <= v <= time(17, 0)):
-            raise ValueError("La hora debe estar entre 09:00 y 17:00")
-        if v.minute not in (0, 30):
-            raise ValueError("Los turnos solo pueden ser en intervalos de 30 minutos")
-        return v
-
-class actualizar_turno(BaseModel):
-    fecha: Optional[date]
-    hora: Optional[time]
-    estado: Optional[str]
-
-    @validator("estado")
-    def validar_estado(cls, v):
-        if v:
-            estados_validos = ["pendiente", "cancelado", "confirmado", "asistido"]
-            if v not in estados_validos:
-                raise ValueError(f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}")
-        return v
-
-    @validator("hora")
-    def validar_horario(cls, v):
-        if v:
-            if not (time(9, 0) <= v <= time(17, 0)):
-                raise ValueError("La hora debe estar entre 09:00 y 17:00")
-            if v.minute not in (0, 30):
-                raise ValueError("Los turnos solo pueden ser en intervalos de 30 minutos")
-        return v
-
 
 @app.post("/turnos")
 async def crear_turno(turno_data: turno_base, db = Depends(get_db)):
 
-    # no permitir si tiene 5 o más cancelados en últimos 6 meses
     persona_id = turno_data.persona_id
-    fecha_actual = date.today()
-    fecha_limite = fecha_actual - timedelta(days=180)
-    turnos_cancelados = db.query(Turno).filter(
-        Turno.persona_id == persona_id,
-        Turno.estado == "cancelado",
-        Turno.fecha >= fecha_limite
-    ).count()
-    
-    if turnos_cancelados >= 5:
-        persona = db.query(Persona).filter(Persona.id == persona_id).first()
-        if persona and persona.habilitado:
-            persona.habilitado = False
-            db.commit()
 
-        raise HTTPException(
-            status_code=400,
-            detail="No se puede asignar turno: la persona tiene 5 o más turnos cancelados en los últimos 6 meses."
-        )
-
-    persona = db.query(Persona).filter(Persona.id == persona_id).first()
-    if not persona:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
-    
-    if not persona.habilitado:
-        raise HTTPException(status_code=400, detail="La persona está deshabilitada")
-    
-    # Validar que la fecha no sea pasada
-    if turno_data.fecha < date.today():
-        raise HTTPException(status_code=400, detail="No se pueden crear turnos en fechas pasadas")
+    validar_persona_habilitada(db, persona_id)
+    validar_turnos_cancelados(db, persona_id)
+    validar_fecha_pasada(turno_data.fecha)
         
     nuevo_turno = Turno(
         persona_id=persona_id,
@@ -135,9 +66,7 @@ def listar_turnos(db = Depends(get_db)):
 
 @app.get("/turnos/{id}")
 def obtener_turno(id: int, db = Depends(get_db)):
-    turno = db.query(Turno).filter(Turno.id == id).first()
-    if not turno:
-        raise HTTPException(status_code=404, detail="Turno no encontrado")
+    turno = buscar_turno(db, id)
     return {
         "id": turno.id,
         "persona_id": turno.persona_id,
@@ -148,14 +77,11 @@ def obtener_turno(id: int, db = Depends(get_db)):
 
 @app.put("/turnos/{id}")
 async def actualizar_turno(id: int, turno_data: actualizar_turno, db = Depends(get_db)):
-    turno = db.query(Turno).filter(Turno.id == id).first()
-    if not turno:
-        raise HTTPException(status_code=404, detail="Turno no encontrado")
+    turno = buscar_turno(db, id)
     
     if turno_data.fecha is not None:
         # Validar que la fecha no sea pasada
-        if turno_data.fecha < date.today():
-            raise HTTPException(status_code=400, detail="No se pueden asignar fechas pasadas")
+        validar_fecha_pasada(turno_data.fecha)
         turno.fecha = turno_data.fecha
     
     if turno_data.hora is not None:
@@ -177,9 +103,7 @@ async def actualizar_turno(id: int, turno_data: actualizar_turno, db = Depends(g
 
 @app.delete("/turnos/{id}")
 def eliminar_turno(id: int, db = Depends(get_db)):
-    turno = db.query(Turno).filter(Turno.id == id).first()
-    if not turno:
-        raise HTTPException(status_code=404, detail="Turno no encontrado")
+    turno = buscar_turno(db, id)
     db.delete(turno)
     db.commit()
     return {"ok": True, "mensaje": "Turno eliminado"}
@@ -235,73 +159,26 @@ def obtener_turnos_disponibles(fecha: str):
 
 # ABM Personas
 
-def validar_email(email: str) -> str:
-    try:
-        valid_email = validate_email(email)
-        return valid_email.email  
-    except EmailNotValidError as e:
-
-#los errores por default estan en ingles, aca cambio el idioma
-        error_msg = str(e).lower()
-        if "must have an @-sign" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El email debe tener un simbolo @")
-        elif "must be something after the @-sign" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: Debe haber algo despues del simbolo @")
-        elif "domain" in error_msg and "invalid" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El dominio del email no es valido")
-        elif "local part" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: La parte local del email (antes del @) no es valida")
-        elif "too long" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El email es demasiado largo")
-        elif "empty" in error_msg:
-            raise HTTPException(status_code=400, detail="email invalido: El email no puede estar vacio")
-        else:
-            raise HTTPException(status_code=400, detail=f"email invalido: {str(e)}")
-
-def calcular_edad(fecha_nacimiento: date) -> int:
-    hoy = date.today()
-    edad = hoy.year - fecha_nacimiento.year
-    if (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day):
-        edad -= 1
-    return edad
-
-
 @app.post("/personas")
 async def crear_persona(request: Request):
     datos = await request.json()
     db = next(get_db())
 
-    # Validar y normalizar email
     email_normalizado = validar_email(datos["email"])
-
-    # me fijo si ya existe una persona con el mismo email, DNI o teléfono
-    persona_existente = db.query(Persona).filter(
-        (Persona.email == email_normalizado) | (Persona.dni == datos["dni"]) | (Persona.telefono == datos["telefono"])
-    ).first()
-
-    if persona_existente:
-        raise HTTPException(status_code=400, detail="Ya existe una persona con este email, DNI o telefono")
+    verificar_persona_existente(db, email_normalizado, datos["dni"], datos["telefono"])
 
     # Validar fecha de nacimiento
-    try:
-        fecha_nac = date.fromisoformat(datos["fecha_nacimiento"])  # YYYY-MM-DD
-    except (KeyError, ValueError):
-        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida. Formato esperado YYYY-MM-DD")
+    validar_formato_fecha(datos["fecha_nacimiento"])
 
     # Reglas adicionales: no futura y no mayor a 120 años
-    hoy = date.today()
-    if fecha_nac > hoy:
-        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida: no puede ser futura")
-    limite_antiguedad = date(hoy.year - 120, hoy.month, hoy.day)
-    if fecha_nac < limite_antiguedad:
-        raise HTTPException(status_code=400, detail="fecha_nacimiento invalida: no puede superar 120 anios")
+    validar_fecha_nacimiento(datos["fecha_nacimiento"])
 
     nueva_persona = Persona(
         nombre=datos["nombre"],
         email=email_normalizado,
         dni=datos["dni"],
         telefono=datos["telefono"],
-        fecha_nacimiento=fecha_nac,
+        fecha_nacimiento=datos["fecha_nacimiento"],
         # Siempre por defecto habilitado 
         habilitado=True
     )
@@ -346,9 +223,7 @@ def listar_personas():
 @app.get("/personas/{id}")
 def obtener_persona(id: int):
     db = next(get_db())
-    persona = db.query(Persona).filter(Persona.id == id).first()
-    if not persona:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    persona = buscar_persona(db, id)
     
     edad = calcular_edad(persona.fecha_nacimiento)
     
@@ -368,9 +243,7 @@ def obtener_persona(id: int):
 async def actualizar_persona(id: int, request: Request):
     datos = await request.json()
     db = next(get_db())
-    persona = db.query(Persona).filter(Persona.id == id).first()
-    if not persona:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    persona = buscar_persona(db, id)
     if "dni" in datos:
         raise HTTPException(status_code=400, detail="No se permite modificar el DNI de una persona")
     if "fecha_nacimiento" in datos:
@@ -443,9 +316,7 @@ async def actualizar_persona(id: int, request: Request):
 @app.delete("/personas/{id}")
 def eliminar_persona(id: int):
     db = next(get_db())
-    persona = db.query(Persona).filter(Persona.id == id).first()
-    if not persona:
-        raise HTTPException(status_code=404, detail="Persona no encontrada")
+    persona = buscar_persona(db, id)
 
     db.delete(persona)
     db.commit()
