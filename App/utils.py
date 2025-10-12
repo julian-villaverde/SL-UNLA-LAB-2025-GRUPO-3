@@ -1,12 +1,9 @@
 from sqlalchemy import event
-from datetime import date, timedelta
+from datetime import date
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
 from email_validator import validate_email, EmailNotValidError
 
-from .models import Turno, Persona
 from .database import SesionLocal, engine
-from .crud import buscar_persona, buscar_turno
 
 #Acceder a la base de datos
 def get_db():
@@ -24,38 +21,6 @@ def habilitar_foreign_keys(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
-
-def validar_turnos_cancelados(db: Session, persona_id: int):
-
-    fecha_actual = date.today()
-    fecha_limite = fecha_actual - timedelta(days=180)
-    
-    # Contar turnos cancelados en los últimos 6 meses
-    turnos_cancelados = db.query(Turno).filter(
-        Turno.persona_id == persona_id,
-        Turno.estado == "cancelado",
-        Turno.fecha >= fecha_limite
-    ).count()
-    
-
-    # Deshabilitar la persona si tiene 5 o más cancelaciones
-    if turnos_cancelados >= 5:
-        persona = buscar_persona(db, persona_id)
-        if persona and persona.habilitado:
-            persona.habilitado = False
-            db.commit()
-        
-        raise HTTPException(
-            status_code=400,
-            detail="No se puede asignar turno: la persona tiene 5 o más turnos cancelados en los últimos 6 meses."
-        )
-
-
-def validar_persona_habilitada(db: Session, persona_id: int):
-
-    persona = buscar_persona(db, persona_id)   
-    if not persona.habilitado:
-        raise HTTPException(status_code=400, detail="La persona está deshabilitada")
     
 
 def validar_fecha_pasada(fecha_turno: date):
@@ -98,7 +63,7 @@ def calcular_edad(fecha_nacimiento: date):
         edad -= 1
     return edad
 
-def validar_fecha_nacimiento(fecha_nacimiento: str):
+def validar_fecha_nacimiento(fecha_nacimiento: date):
     hoy = date.today()
     
     if fecha_nacimiento > hoy:

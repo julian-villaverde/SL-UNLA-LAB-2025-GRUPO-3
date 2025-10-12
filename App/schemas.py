@@ -25,7 +25,7 @@ class turno_base(BaseModel):
             raise ValueError("Los turnos solo pueden ser en intervalos de 30 minutos")
         return v
 
-class actualizar_turno(BaseModel):
+class actualizar_turno_base(BaseModel):
     fecha: Optional[date]
     hora: Optional[time]
     estado: Optional[str]
