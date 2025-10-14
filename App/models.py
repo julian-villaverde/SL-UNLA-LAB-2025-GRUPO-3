@@ -1,7 +1,8 @@
 from sqlalchemy import Integer, String, Boolean, Date, Time, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import date, time
-from .Database import Base
+
+from .database import Base
 
 
 class Persona(Base):
