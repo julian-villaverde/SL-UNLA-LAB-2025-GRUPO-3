@@ -2,7 +2,8 @@ from datetime import date
 from fastapi import FastAPI, Request, Depends
 
 from .schemas import actualizar_turno_base, turno_base
-from .crud import crear_turno, eliminar_turno, listar_turnos, obtener_todas_personas, actualizar_turno, crear_persona, actualizar_persona, buscar_persona, buscar_turno, obtener_turnos_disponibles
+from .crudPersonas import  obtener_todas_personas, crear_persona, actualizar_persona, buscar_persona
+from .crudTurnos import crear_turno, eliminar_turno, listar_turnos, actualizar_turno, buscar_turno, obtener_turnos_disponibles
 from .database import Base, engine
 from .utils import get_db, calcular_edad, validar_formato_fecha
 
