@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, Depends
 
 from .schemas import actualizar_turno_base, turno_base
 from .crudPersonas import  obtener_todas_personas, crear_persona, actualizar_persona, buscar_persona
-from .crudTurnos import crear_turno, eliminar_turno, listar_turnos, actualizar_turno, buscar_turno, obtener_turnos_disponibles
+from .crudTurnos import cancelar_turno, confirmar_turno, crear_turno, eliminar_turno, listar_turnos, actualizar_turno, buscar_turno, obtener_turnos_disponibles
 from .database import Base, engine
 from .utils import get_db, calcular_edad, validar_formato_fecha
 
@@ -98,6 +98,31 @@ def obtener_turnos_disponibles_endpoint(fecha: str):
         "fecha": fecha,
         "horarios_disponibles": turnos_disponibles
     } 
+
+@app.put("/turnos/{turno_id}/cancelar")
+def cancelar_turno_endpoint(turno_id: int, db = Depends(get_db)):
+    
+    turno_cancelado = cancelar_turno(db, turno_id)
+        
+    return {
+        "id": turno_cancelado.id,
+        "fecha": turno_cancelado.fecha.strftime("%Y-%m-%d"),
+        "hora": turno_cancelado.hora.strftime("%H:%M"),
+        "estado": turno_cancelado.estado
+    }
+    
+
+@app.put("/turnos/{turno_id}/confirmar")
+def confirmar_turno_endpoint(turno_id: int, db = Depends(get_db)):
+        
+    turno_confirmado = confirmar_turno(db, turno_id)
+    
+    return {
+        "id": turno_confirmado.id,
+        "fecha": turno_confirmado.fecha.strftime("%Y-%m-%d"),
+        "hora": turno_confirmado.hora.strftime("%H:%M"),
+        "estado": turno_confirmado.estado
+    }
 
 
 # Endpoints Personas
