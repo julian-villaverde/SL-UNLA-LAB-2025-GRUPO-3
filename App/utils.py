@@ -80,3 +80,12 @@ def validar_formato_fecha(fecha_str:str):
         date.fromisoformat(fecha_str)  # YYYY-MM-DD
     except (KeyError, ValueError):
         raise HTTPException(status_code=400, detail="Formato esperado YYYY-MM-DD")
+
+
+def validar_turno_modificable(turno):
+    
+    if turno.estado in ["asistido", "cancelado"]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No se puede modificar un turno {turno.estado}"
+        )
