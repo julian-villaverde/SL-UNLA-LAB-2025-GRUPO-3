@@ -3,6 +3,7 @@ from datetime import date
 from fastapi import HTTPException
 from email_validator import validate_email, EmailNotValidError
 
+from .config import ESTADO_ASISTIDO, ESTADO_CANCELADO, MAX_EDAD_PERMITIDA
 from .database import SesionLocal, engine
 
 #Acceder a la base de datos
@@ -68,8 +69,8 @@ def validar_fecha_nacimiento(fecha_nacimiento: date):
     
     if fecha_nacimiento > hoy:
         raise HTTPException(status_code=400, detail="La fecha de nacimiento no puede ser futura")
-    
-    limite_antiguedad = date(hoy.year - 120, hoy.month, hoy.day)
+
+    limite_antiguedad = date(hoy.year - MAX_EDAD_PERMITIDA, hoy.month, hoy.day)
 
     if fecha_nacimiento < limite_antiguedad:
         raise HTTPException(status_code=400, detail="La fecha de nacimiento no puede superar 120 años")
@@ -83,8 +84,8 @@ def validar_formato_fecha(fecha_str:str):
 
 
 def validar_turno_modificable(turno):
-    
-    if turno.estado in ["asistido", "cancelado"]:
+
+    if turno.estado in [ESTADO_ASISTIDO, ESTADO_CANCELADO]:
         raise HTTPException(
             status_code=400,
             detail=f"No se puede modificar un turno {turno.estado}"
