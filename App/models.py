@@ -26,9 +26,6 @@ class Persona(Base):
 class Turno(Base):
     __tablename__ = "turnos"
 
-    #implementa una restricción para que no se puedan crear turnos con la misma fecha y hora
-    __table_args__ = (UniqueConstraint("fecha", "hora", name="uq_fecha_hora"),)
-
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     #evita que se creen turnos con id's de personas inexistentes, si borro la persona tambien tengo que borrar los turnos o nos va a dar error,habria que automatizar que se borren los turnos con las personas
     persona_id: Mapped[int] = mapped_column(Integer, ForeignKey("personas.id", ondelete="CASCADE"), nullable=False)

@@ -5,3 +5,4 @@ typing_extensions
 pandas
 borb
 email-validator
+python-dotenv

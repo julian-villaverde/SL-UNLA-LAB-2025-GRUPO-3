@@ -6,6 +6,8 @@ from App.schemas import turno_base
 from .utils import validar_fecha_pasada, validar_turno_modificable
 from .crudPersonas import validar_persona_habilitada, buscar_persona, cambiar_estado_persona
 from .models import Turno
+from .config import HORARIO_INICIO, HORARIO_FIN, INTERVALO_TURNOS_MINUTOS, MAX_TURNOS_CANCELADOS, DIAS_LIMITE_CANCELACIONES, ESTADO_PENDIENTE, ESTADO_CONFIRMADO, ESTADO_CANCELADO, ESTADO_ASISTIDO
+
 
 def crear_turno(db: Session, turno_data: turno_base):
 
@@ -17,10 +19,23 @@ def crear_turno(db: Session, turno_data: turno_base):
     if turnos_cancelados:
         raise HTTPException(
             status_code=400, 
-            detail="No se puede asignar turno: la persona tiene 5 o más turnos cancelados en los últimos 6 meses."
+            detail=f"No se puede asignar turno: la persona tiene {MAX_TURNOS_CANCELADOS} o más turnos cancelados en los últimos 6 meses."
         )
     
     validar_fecha_pasada(turno_data.fecha)
+
+    horarios_disponibles = obtener_turnos_disponibles(db, turno_data.fecha)
+    hora_solicitada = turno_data.hora.strftime("%H:%M")
+
+    print(f"🔍 Hora solicitada: {hora_solicitada}")
+    print(f"🔍 Horarios disponibles: {horarios_disponibles}")
+    
+    if hora_solicitada not in horarios_disponibles:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"El horario {hora_solicitada} del día {turno_data.fecha} no está disponible"
+        )
+    
     
     nuevo_turno = Turno(
         persona_id=persona_id,
@@ -82,7 +97,7 @@ def cancelar_turno(db: Session, turno_id: int):
     
     validar_fecha_pasada(turno.fecha)
     
-    turno.estado = "cancelado"
+    turno.estado = ESTADO_CANCELADO
     db.commit()
     db.refresh(turno)
 
@@ -96,7 +111,7 @@ def contar_turnos_cancelados(db: Session, persona_id: int, dias_limite: int):
 
     turnos_cancelados = db.query(Turno).filter(
         Turno.persona_id == persona_id,
-        Turno.estado == "cancelado",
+        Turno.estado == ESTADO_CANCELADO,
         Turno.fecha >= fecha_limite
     ).count()
     
@@ -111,18 +126,18 @@ def obtener_turnos_disponibles(db: Session, fecha: date):
     validar_fecha_pasada(fecha)
     
     horarios_posibles = []
-    hora_actual = time(9, 0)  # 9:00
-    hora_limite = time(17, 0)  # 17:00
-    
+    hora_actual = time.fromisoformat(HORARIO_INICIO) 
+    hora_limite = time.fromisoformat(HORARIO_FIN)
+
     while hora_actual <= hora_limite:
         horarios_posibles.append(hora_actual)
         
-        datetime_temp = datetime.combine(fecha, hora_actual) + timedelta(minutes=30)
+        datetime_temp = datetime.combine(fecha, hora_actual) + timedelta(minutes=INTERVALO_TURNOS_MINUTOS)
         hora_actual = datetime_temp.time()
         
     turnos_ocupados = db.query(Turno.hora).filter(
         Turno.fecha == fecha,
-        Turno.estado != "cancelado"
+        Turno.estado != ESTADO_CANCELADO
     ).all()
     
     horas_ocupadas = {turno.hora for turno in turnos_ocupados}
@@ -136,10 +151,10 @@ def obtener_turnos_disponibles(db: Session, fecha: date):
 
 def validar_turnos_cancelados(db: Session, persona_id: int):
     
-    turnos_cancelados = contar_turnos_cancelados(db, persona_id, 180)
+    turnos_cancelados = contar_turnos_cancelados(db, persona_id, DIAS_LIMITE_CANCELACIONES)
 
     # Deshabilitar la persona si tiene 5 o más cancelaciones
-    if turnos_cancelados >= 5:
+    if turnos_cancelados >= MAX_TURNOS_CANCELADOS:
         persona = buscar_persona(db, persona_id)
         if persona and persona.habilitado:
             cambiar_estado_persona(db, persona_id)
@@ -154,13 +169,13 @@ def confirmar_turno(db: Session, turno_id: int):
     
     validar_turno_modificable(turno)
     
-    if turno.estado != "pendiente":
+    if turno.estado != ESTADO_PENDIENTE:
         raise HTTPException(
             status_code=400,
             detail="Solo se pueden confirmar turnos pendientes"
         )
     
-    turno.estado = "confirmado"
+    turno.estado = ESTADO_CONFIRMADO
     db.commit()
     db.refresh(turno)
     
@@ -171,13 +186,13 @@ def marcar_asistencia_turno(db: Session, turno_id: int):
     
     turno = buscar_turno(db, turno_id)
 
-    if turno.estado != "confirmado":
+    if turno.estado != ESTADO_CONFIRMADO:
         raise HTTPException(
             status_code=400,
             detail="Solo se puede marcar asistencia en turnos confirmados"
         )
     
-    turno.estado = "asistido"
+    turno.estado = ESTADO_ASISTIDO
     db.commit()
     db.refresh(turno)
     

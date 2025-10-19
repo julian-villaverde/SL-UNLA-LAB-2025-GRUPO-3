@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from .utils import validar_email, validar_formato_fecha, validar_fecha_nacimiento
 from .models import Persona, Turno
+from .config import MAX_TURNOS_CANCELADOS, DIAS_LIMITE_CANCELACIONES, ESTADO_CANCELADO
 
 
 def crear_persona(db: Session, datos: dict):
@@ -78,16 +79,16 @@ def actualizar_persona(db: Session, persona_id: int, datos: dict):
         if nuevo_estado_habilitado is False:
             # Verificar 5 cancelaciones en los últimos 6 meses antes de deshabilitar
             fecha_actual = date.today()
-            fecha_limite = fecha_actual - timedelta(days=180)
+            fecha_limite = fecha_actual - timedelta(days=DIAS_LIMITE_CANCELACIONES)
             turnos_cancelados = db.query(Turno).filter(
                 Turno.persona_id == persona.id,
-                Turno.estado == "cancelado",
+                Turno.estado == ESTADO_CANCELADO,
                 Turno.fecha >= fecha_limite
             ).count()
-            if turnos_cancelados < 5:
+            if turnos_cancelados < MAX_TURNOS_CANCELADOS:
                 raise HTTPException(
                     status_code=400,
-                    detail="No se puede deshabilitar: la persona no tiene al menos 5 turnos cancelados en los ultimos 6 meses"
+                    detail=f"No se puede deshabilitar: la persona no tiene al menos {MAX_TURNOS_CANCELADOS} turnos cancelados en los ultimos 6 meses"
                 )
         persona.habilitado = nuevo_estado_habilitado
     
