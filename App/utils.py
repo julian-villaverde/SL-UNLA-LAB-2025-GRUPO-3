@@ -15,15 +15,6 @@ def get_db():
         db.close()
 
 
-# hace que funcione ondelete cascade  
-@event.listens_for(engine, "connect")
-def habilitar_foreign_keys(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
-
-    
-
 def validar_fecha_pasada(fecha_turno: date):
 
     fecha_actual = date.today()

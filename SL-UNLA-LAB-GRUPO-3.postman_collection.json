@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "271bc266-d1fb-42e7-9140-32272ba48c6b",
+		"_postman_id": "574bbccd-5ea1-40d0-aafc-cbc83cda9c59",
 		"name": "SL-UNLA-LAB-GRUPO-3",
 		"description": "Link de invitacion: [https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&amp;creator=48509537](https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537)\n\nAlgo a notar es que por ej :",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48472285"
+		"_exporter_id": "48509537",
+		"_collection_link": "https://julianagustinvillaverde-2391323.postman.co/workspace/privtest~050a779c-0dfe-464f-b7e1-ccfaaccbaf8d/collection/48509537-574bbccd-5ea1-40d0-aafc-cbc83cda9c59?action=share&source=collection_link&creator=48509537"
 	},
 	"item": [
 		{
@@ -720,6 +721,304 @@
 				}
 			],
 			"description": "Testeo de endpoints de turnos. Casos validos e invalidos: validacion de hora (9 a 17), intervalos de 30 minutos, formato de fecha. Para contar cancelaciones usar PUT /turnos/{id} con estado=cancelado."
+		},
+		{
+			"name": "Punto E",
+			"item": [
+				{
+					"name": "1. Reportes por Fecha",
+					"item": [
+						{
+							"name": "GET /reportes/turnos-por-fecha",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-por-fecha?fecha=2025-10-20",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-por-fecha"
+									],
+									"query": [
+										{
+											"key": "fecha",
+											"value": "2025-10-20"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Casos de prueba para el endpoint de reportes por fecha específica"
+				},
+				{
+					"name": "2. Reportes de Turnos Cancelados por Mes",
+					"item": [
+						{
+							"name": "GET /reportes/turnos-cancelados-por-mes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados-por-mes",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-cancelados-por-mes"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Caso de prueba para el reporte de turnos cancelados del mes actual"
+				},
+				{
+					"name": "3. Reportes por Persona",
+					"item": [
+						{
+							"name": "GET /reportes/turnos-por-persona",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-por-persona?dni=10000001",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-por-persona"
+									],
+									"query": [
+										{
+											"key": "dni",
+											"value": "10000001"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Casos de prueba para el reporte de turnos por persona específica"
+				},
+				{
+					"name": "4. Reportes de Personas con Turnos Cancelados",
+					"item": [
+						{
+							"name": "GET /reportes/turnos-cancelados - Minimo 5 cancelaciones",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados?min=5",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-cancelados"
+									],
+									"query": [
+										{
+											"key": "min",
+											"value": "5"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /reportes/turnos-cancelados - Sin parametro",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-cancelados"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Casos de prueba para el reporte de personas con turnos cancelados"
+				},
+				{
+					"name": "5. Reportes de Turnos Confirmados",
+					"item": [
+						{
+							"name": "GET /reportes/turnos-confirmados - Período valido",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-01&hasta=2025-10-31",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-confirmados"
+									],
+									"query": [
+										{
+											"key": "desde",
+											"value": "2025-10-01"
+										},
+										{
+											"key": "hasta",
+											"value": "2025-10-31"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /reportes/turnos-confirmados - Fechas invalidas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-31&hasta=2025-10-01",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"turnos-confirmados"
+									],
+									"query": [
+										{
+											"key": "desde",
+											"value": "2025-10-31"
+										},
+										{
+											"key": "hasta",
+											"value": "2025-10-01"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Casos de prueba para el reporte de turnos confirmados (sin paginación)"
+				},
+				{
+					"name": "6. Reportes de Estado de Personas",
+					"item": [
+						{
+							"name": "GET /reportes/estado-personas - Habilitadas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=true",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"estado-personas"
+									],
+									"query": [
+										{
+											"key": "habilitada",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /reportes/estado-personas - Inhabilitadas",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=false",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"reportes",
+										"estado-personas"
+									],
+									"query": [
+										{
+											"key": "habilitada",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Casos de prueba para el reporte de estado de personas"
+				}
+			]
 		}
 	],
 	"variable": [

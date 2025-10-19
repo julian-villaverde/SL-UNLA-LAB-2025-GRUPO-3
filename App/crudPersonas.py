@@ -77,7 +77,7 @@ def actualizar_persona(db: Session, persona_id: int, datos: dict):
     if "habilitado" in datos:
         nuevo_estado_habilitado = datos["habilitado"]
         if nuevo_estado_habilitado is False:
-            # Verificar 5 cancelaciones en los últimos 6 meses antes de deshabilitar
+            # Verificar 5 cancelaciones en los ultimos 6 meses antes de deshabilitar
             fecha_actual = date.today()
             fecha_limite = fecha_actual - timedelta(days=DIAS_LIMITE_CANCELACIONES)
             turnos_cancelados = db.query(Turno).filter(
@@ -116,7 +116,7 @@ def cambiar_estado_persona(db: Session, persona_id: int):
 
     persona = buscar_persona(db, persona_id)
     
-    # si está habilitada la deshabilita, y viceversa
+    # si esta habilitada la deshabilita, y viceversa
     persona.habilitado = not persona.habilitado
     
     db.commit()

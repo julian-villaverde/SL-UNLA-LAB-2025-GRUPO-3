@@ -6,7 +6,7 @@ from App.schemas import turno_base
 from .utils import validar_fecha_pasada, validar_turno_modificable
 from .crudPersonas import validar_persona_habilitada, buscar_persona, cambiar_estado_persona
 from .models import Turno
-from .config import HORARIO_INICIO, HORARIO_FIN, INTERVALO_TURNOS_MINUTOS, MAX_TURNOS_CANCELADOS, DIAS_LIMITE_CANCELACIONES, ESTADO_PENDIENTE, ESTADO_CONFIRMADO, ESTADO_CANCELADO, ESTADO_ASISTIDO
+from .config import HORARIO_INICIO, HORARIO_FIN, INTERVALO_TURNOS_MINUTOS, MAX_TURNOS_CANCELADOS, DIAS_LIMITE_CANCELACIONES, ESTADO_PENDIENTE, ESTADO_CONFIRMADO, ESTADO_CANCELADO, ESTADO_ASISTIDO, MIN_CANCELADOS_DEFAULT, LIMIT_PAGINACION_DEFAULT
 
 
 def crear_turno(db: Session, turno_data: turno_base):
@@ -197,3 +197,97 @@ def marcar_asistencia_turno(db: Session, turno_id: int):
     db.refresh(turno)
     
     return turno
+
+# punto E
+def obtener_turnos_por_fecha_con_persona(db: Session, fecha: date):
+    """Obtiene todos los turnos de una fecha especifica con informacion de la persona"""
+    from .models import Persona
+    
+    turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
+        Turno.fecha == fecha
+    ).all()
+    
+    return turnos
+
+
+def obtener_turnos_cancelados_mes_actual(db: Session):
+    """Obtiene todos los turnos cancelados del mes actual"""
+    from .models import Persona
+    from datetime import datetime
+    
+    fecha_actual = datetime.now()
+    mes_actual = fecha_actual.month
+    año_actual = fecha_actual.year
+    
+    turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
+        Turno.estado == ESTADO_CANCELADO,
+        db.func.extract('month', Turno.fecha) == mes_actual,
+        db.func.extract('year', Turno.fecha) == año_actual
+    ).all()
+    
+    return turnos
+
+
+def obtener_turnos_por_persona(db: Session, dni: str):
+    """Obtiene todos los turnos de una persona especifica por DNI"""
+    from .models import Persona
+    
+    turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
+        Persona.dni == dni
+    ).all()
+    
+    return turnos
+
+
+def obtener_personas_con_turnos_cancelados(db: Session, min_cancelados: int = MIN_CANCELADOS_DEFAULT):
+    """Obtiene personas que tienen al menos min_cancelados turnos cancelados"""
+    from .models import Persona
+    
+    personas = db.query(Persona).join(Turno, Persona.id == Turno.persona_id).filter(
+        Turno.estado == ESTADO_CANCELADO
+    ).group_by(Persona.id).having(
+        db.func.count(Turno.id) >= min_cancelados
+    ).all()
+    
+    resultado = []
+    for persona in personas:
+        turnos_cancelados = db.query(Turno).filter(
+            Turno.persona_id == persona.id,
+            Turno.estado == ESTADO_CANCELADO
+        ).all()
+        
+        resultado.append({
+            'persona': persona,
+            'cantidad_cancelados': len(turnos_cancelados),
+            'turnos_cancelados': turnos_cancelados
+        })
+    
+    return resultado
+
+
+def obtener_turnos_confirmados_periodo(db: Session, fecha_desde: date, fecha_hasta: date, offset: int = 0, limit: int = LIMIT_PAGINACION_DEFAULT):
+    """Obtiene turnos confirmados en un periodo con paginacion"""
+    from .models import Persona
+    
+    turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
+        Turno.estado == ESTADO_CONFIRMADO,
+        Turno.fecha >= fecha_desde,
+        Turno.fecha <= fecha_hasta
+    ).offset(offset).limit(limit).all()
+    
+    total = db.query(Turno).filter(
+        Turno.estado == ESTADO_CONFIRMADO,
+        Turno.fecha >= fecha_desde,
+        Turno.fecha <= fecha_hasta
+    ).count()
+    
+    return turnos, total
+
+
+def obtener_personas_por_estado(db: Session, habilitada: bool):
+    """Obtiene personas habilitadas o inhabilitadas para sacar turnos"""
+    from .models import Persona
+    
+    personas = db.query(Persona).filter(Persona.habilitado == habilitada).all()
+    
+    return personas

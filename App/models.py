@@ -21,14 +21,14 @@ class Persona(Base):
     habilitado: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # esta linea lo que hace es que relaciona turnos con personas
-    turnos = relationship("Turno", back_populates="persona", cascade="all, delete-orphan", passive_deletes=True)
+    turnos = relationship("Turno", back_populates="persona")
 
 class Turno(Base):
     __tablename__ = "turnos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    #evita que se creen turnos con id's de personas inexistentes, si borro la persona tambien tengo que borrar los turnos o nos va a dar error,habria que automatizar que se borren los turnos con las personas
-    persona_id: Mapped[int] = mapped_column(Integer, ForeignKey("personas.id", ondelete="CASCADE"), nullable=False)
+    #evita que se creen turnos con id's de personas inexistentes
+    persona_id: Mapped[int] = mapped_column(Integer, ForeignKey("personas.id"), nullable=False)
 
     # lo mismo que la otra linea pero en viceversa 
     persona = relationship("Persona", back_populates="turnos")
