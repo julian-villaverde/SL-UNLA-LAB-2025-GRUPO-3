@@ -1,11 +1,10 @@
 {
 	"info": {
-		"_postman_id": "574bbccd-5ea1-40d0-aafc-cbc83cda9c59",
+		"_postman_id": "e0244208-f9a9-4425-a17d-bcd9f8044c08",
 		"name": "SL-UNLA-LAB-GRUPO-3",
 		"description": "Link de invitacion: [https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&amp;creator=48509537](https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537)\n\nAlgo a notar es que por ej :",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48509537",
-		"_collection_link": "https://julianagustinvillaverde-2391323.postman.co/workspace/privtest~050a779c-0dfe-464f-b7e1-ccfaaccbaf8d/collection/48509537-574bbccd-5ea1-40d0-aafc-cbc83cda9c59?action=share&source=collection_link&creator=48509537"
+		"_exporter_id": "48472285"
 	},
 	"item": [
 		{
@@ -651,6 +650,42 @@
 										"turnos",
 										"2",
 										"cancelar"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT modificar fecha",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "    {\n        \"fecha\": \"2025-11-02\"\n    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1/",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1",
+										""
 									]
 								}
 							},

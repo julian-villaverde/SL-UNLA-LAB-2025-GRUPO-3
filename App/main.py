@@ -63,7 +63,7 @@ def obtener_turno(id: int, db = Depends(get_db)):
     }
 
 @app.put("/turnos/{id}")
-async def actualizar_turno_endpoint(id: int, turno_data: actualizar_turno_base, db = Depends(get_db)):
+def actualizar_turno_endpoint(id: int, turno_data: actualizar_turno_base, db = Depends(get_db)):
     
     turno = actualizar_turno(db, id, turno_data)
     
