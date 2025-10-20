@@ -1,10 +1,11 @@
 {
 	"info": {
-		"_postman_id": "e0244208-f9a9-4425-a17d-bcd9f8044c08",
-		"name": "SL-UNLA-LAB-GRUPO-3",
-		"description": "Link de invitacion: [https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&amp;creator=48509537](https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537)\n\nAlgo a notar es que por ej :",
+		"_postman_id": "fcd9ce78-b033-441b-952a-54a8a98e5e2e",
+		"name": "SL-UNLA-LAB-GRUPO-03 Copy",
+		"description": "Link de invitacion: [https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&amp;creator=48509537](https://julianagustinvillaverde-2391323.postman.co/workspace/Julian-Villaverde's-Workspace~f270a3a5-e3fb-4da1-866d-62e3974f516b/collection/48509537-0edd7cd0-4238-445c-8c03-a3d3a176fd9f?action=share&creator=48509537)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48472285"
+		"_exporter_id": "48509537",
+		"_collection_link": "https://julianagustinvillaverde-2391323.postman.co/workspace/privtest~050a779c-0dfe-464f-b7e1-ccfaaccbaf8d/collection/48509537-fcd9ce78-b033-441b-952a-54a8a98e5e2e?action=share&source=collection_link&creator=48509537"
 	},
 	"item": [
 		{
@@ -165,7 +166,94 @@
 									]
 								}
 							},
-							"response": []
+							"response": [
+								{
+									"name": "crear persona Pedro perez",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"nombre\": \"Pedro Perez\",\r\n  \"email\": \"pepito@gmail.com\",\r\n  \"dni\": \"12345678\",\r\n  \"telefono\": \"1122334455\",\r\n  \"fecha_nacimiento\": \"1990-05-20\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas"
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": null
+								},
+								{
+									"name": "crear persona Pedro Gonzalez",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"nombre\": \"Pedro Gonzalez\",\r\n  \"email\": \"pedrogonzalez@gmail.com\",\r\n  \"dni\": \"23456789\",\r\n  \"telefono\": \"2233445566\",\r\n  \"fecha_nacimiento\": \"1990-05-20\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/personas",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"personas"
+											]
+										}
+									},
+									"_postman_previewlanguage": "",
+									"header": [],
+									"cookie": [
+										{
+											"expires": "Invalid Date",
+											"domain": "",
+											"path": ""
+										}
+									],
+									"body": ""
+								}
+							]
 						}
 					]
 				},
@@ -221,7 +309,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+											"raw": "{\r\n  \"dni\": \"99999999\"\r\n}"
 										},
 										"url": {
 											"raw": "http://127.0.0.1:8000/personas/1",
@@ -254,7 +342,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n  \"telefono\": \"1199887766\",\r\n  \"habilitado\": false\r\n}"
+											"raw": "{\r\n  \"fecha_nacimiento\": \"1990-01-01\"\r\n}"
 										},
 										"url": {
 											"raw": "http://127.0.0.1:8000/personas/1",
@@ -341,14 +429,19 @@
 								}
 							},
 							"response": []
-						},
+						}
+					]
+				},
+				{
+					"name": "DEL",
+					"item": [
 						{
-							"name": "/personas/{id}",
+							"name": "personas/{id}",
 							"request": {
-								"method": "GET",
+								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "http://127.0.0.1:8000/personas/1\n",
+									"raw": "http://127.0.0.1:8000/personas/1",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -359,36 +452,13 @@
 									"port": "8000",
 									"path": [
 										"personas",
-										"1\n"
+										"1"
 									]
 								}
 							},
 							"response": []
 						}
 					]
-				},
-				{
-					"name": "personas/{id}",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://127.0.0.1:8000/personas/1",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "8000",
-							"path": [
-								"personas",
-								"1"
-							]
-						}
-					},
-					"response": []
 				}
 			],
 			"description": "_**\\-----Testeo de endpoints de personas (basico)-----**_\n\n**\\--POST:**  \n\\-Sirve para crear una persona, que no se repita el dni o el mail sino les salta error  \n\\-En body ingresan los parametros para crear las personas\n\n**\\--GET/personas:** Muestra todas las personas existentes, no requiere ningun tipo de parametro\n\n**\\--GET/personas/{id}:** Muestra una persona especifica segun el numero de {id}\n\n**\\--PUT:** Actualiza los campos de una persona ya existente, se ingresan los datos en body\n\n**\\--DEL:** Borra una persona especifica segun el numero de {id}"
@@ -397,45 +467,343 @@
 			"name": "Turnos",
 			"item": [
 				{
-					"name": "Casos validos",
+					"name": "POST",
 					"item": [
 						{
-							"name": "POST /turnos (valido)",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:00:00\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
+							"name": "Casos validos",
+							"item": [
+								{
+									"name": "POST /turnos (valido)",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"09:00:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
 										}
-									}
+									},
+									"response": []
 								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos"
-									]
+								{
+									"name": "POST /turnos (valido) Copy",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"09:30:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos (valido) Copy 2",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"10:00:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos (valido) Copy 3",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"10:30:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos (valido) Copy 4",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"11:00:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos (valido) Copy 5",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"11:30:00\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
+							]
 						},
+						{
+							"name": "Casos invalidos",
+							"item": [
+								{
+									"name": "POST /turnos hora fuera de rango",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"08:30:00\"\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos intervalo no 30 min",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-28\",\r\n  \"hora\": \"09:15:00\"\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "POST /turnos fecha invalida",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-13-40\",\r\n  \"hora\": \"09:00:00\"\r\n}"
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Nota: en fecha invalida el mensaje esta en ingles"
+						}
+					],
+					"description": "Nota: no me dejaba agregar ejemplos, asi que tuve que crear multiples copias en POST-> Casos Validos"
+				},
+				{
+					"name": "GET",
+					"item": [
 						{
 							"name": "GET /turnos",
 							"request": {
@@ -484,176 +852,76 @@
 					]
 				},
 				{
-					"name": "Casos invalidos",
+					"name": "PUT",
 					"item": [
 						{
-							"name": "POST /turnos hora fuera de rango",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"08:30:00\"\r\n}"
+							"name": "Cambiar estado (Punto D)",
+							"item": [
+								{
+									"name": "PUT /turnos/{id} confirmar",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos/1/confirmar",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos",
+												"1",
+												"confirmar"
+											]
+										}
+									},
+									"response": []
 								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos"
-									]
+								{
+									"name": "PUT /turnos/{id} cancelar",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "http://127.0.0.1:8000/turnos/1/cancelar",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"turnos",
+												"1",
+												"cancelar"
+											]
+										}
+									},
+									"response": []
 								}
-							},
-							"response": []
-						},
-						{
-							"name": "POST /turnos intervalo no 30 min",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:15:00\"\r\n}"
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "POST /turnos fecha invalida",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-13-40\",\r\n  \"hora\": \"09:00:00\"\r\n}"
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Actualizar turno",
-					"item": [
-						{
-							"name": "Cambiar estado",
-							"item": []
-						},
-						{
-							"name": "PUT /turnos/{id} confirmar",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n  \"persona_id\": 1,\r\n  \"fecha\": \"2025-10-01\",\r\n  \"hora\": \"09:00:00\",\r\n  \"estado\": \"confirmado\"\r\n}"
-								},
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos/3/confirmar",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos",
-										"3",
-										"confirmar"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "PUT /turnos/{id} cancelar",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "http://127.0.0.1:8000/turnos/2/cancelar",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"turnos",
-										"2",
-										"cancelar"
-									]
-								}
-							},
-							"response": []
+							]
 						},
 						{
 							"name": "PUT modificar fecha",
@@ -665,7 +933,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "    {\n        \"fecha\": \"2025-11-02\"\n    }",
+									"raw": "    {\n        \"fecha\": \"2025-11-03\"\n    }",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -690,11 +958,45 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "PUT  asisistir",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/turnos/1/confirmar",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "8000",
+									"path": [
+										"turnos",
+										"1",
+										"confirmar"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
 				{
-					"name": "Eliminar turno",
+					"name": "DEL",
 					"item": [
 						{
 							"name": "DELETE /turnos/{id}",
@@ -722,7 +1024,7 @@
 					]
 				},
 				{
-					"name": "Turnos disponibles",
+					"name": "Turnos disponibles (Punto C)",
 					"item": [
 						{
 							"name": "GET /turnos-disponibles?fecha=YYYY-MM-DD",
@@ -730,7 +1032,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://127.0.0.1:8000/turnos-disponibles?fecha=2025-10-01",
+									"raw": "http://127.0.0.1:8000/turnos-disponibles?fecha=2025-10-28",
 									"protocol": "http",
 									"host": [
 										"127",
@@ -745,7 +1047,7 @@
 									"query": [
 										{
 											"key": "fecha",
-											"value": "2025-10-01"
+											"value": "2025-10-28"
 										}
 									]
 								}
@@ -753,307 +1055,442 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Reportes (Punto E)",
+					"item": [
+						{
+							"name": "1. Reportes por Fecha",
+							"item": [
+								{
+									"name": "GET /reportes/turnos-por-fecha",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-por-fecha?fecha=2025-10-28",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-por-fecha"
+											],
+											"query": [
+												{
+													"key": "fecha",
+													"value": "2025-10-28"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "2. Reportes de Turnos Cancelados por Mes",
+							"item": [
+								{
+									"name": "GET /reportes/turnos-cancelados-por-mes",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados-por-mes",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-cancelados-por-mes"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Caso de prueba para el reporte de turnos cancelados del mes actual"
+						},
+						{
+							"name": "3. Reportes por Persona",
+							"item": [
+								{
+									"name": "GET /reportes/turnos-por-persona",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-por-persona?dni=1122334455",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-por-persona"
+											],
+											"query": [
+												{
+													"key": "dni",
+													"value": "1122334455"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "GET /reportes/turnos-por-persona Pedro Perz",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://127.0.0.1:8000/reportes/turnos-por-persona?dni=12345678",
+													"protocol": "http",
+													"host": [
+														"127",
+														"0",
+														"0",
+														"1"
+													],
+													"port": "8000",
+													"path": [
+														"reportes",
+														"turnos-por-persona"
+													],
+													"query": [
+														{
+															"key": "dni",
+															"value": "12345678"
+														}
+													]
+												}
+											},
+											"_postman_previewlanguage": "",
+											"header": [],
+											"cookie": [
+												{
+													"expires": "Invalid Date",
+													"domain": "",
+													"path": ""
+												}
+											],
+											"body": ""
+										},
+										{
+											"name": "GET /reportes/turnos-por-persona Pedro gonzalez",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://127.0.0.1:8000/reportes/turnos-por-persona?dni=23456789",
+													"protocol": "http",
+													"host": [
+														"127",
+														"0",
+														"0",
+														"1"
+													],
+													"port": "8000",
+													"path": [
+														"reportes",
+														"turnos-por-persona"
+													],
+													"query": [
+														{
+															"key": "dni",
+															"value": "23456789"
+														}
+													]
+												}
+											},
+											"_postman_previewlanguage": "",
+											"header": [],
+											"cookie": [
+												{
+													"expires": "Invalid Date",
+													"domain": "",
+													"path": ""
+												}
+											],
+											"body": ""
+										}
+									]
+								}
+							],
+							"description": "Casos de prueba para el reporte de turnos por persona específica"
+						},
+						{
+							"name": "4. Reportes de Personas con Turnos Cancelados",
+							"item": [
+								{
+									"name": "GET /reportes/turnos-cancelados - Minimo 5 cancelaciones",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados?min=5",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-cancelados"
+											],
+											"query": [
+												{
+													"key": "min",
+													"value": "5"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "5. Reportes de Turnos Confirmados",
+							"item": [
+								{
+									"name": "GET /reportes/turnos-confirmados - Periodo valido",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-01&hasta=2025-10-31",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-confirmados"
+											],
+											"query": [
+												{
+													"key": "desde",
+													"value": "2025-10-01"
+												},
+												{
+													"key": "hasta",
+													"value": "2025-10-31"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "GET /reportes/turnos-confirmados - Periodo valido",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-01&hasta=2025-10-31",
+													"protocol": "http",
+													"host": [
+														"127",
+														"0",
+														"0",
+														"1"
+													],
+													"port": "8000",
+													"path": [
+														"reportes",
+														"turnos-confirmados"
+													],
+													"query": [
+														{
+															"key": "desde",
+															"value": "2025-10-01"
+														},
+														{
+															"key": "hasta",
+															"value": "2025-10-31"
+														}
+													]
+												}
+											},
+											"_postman_previewlanguage": null,
+											"header": null,
+											"cookie": [],
+											"body": null
+										},
+										{
+											"name": "GET /reportes/turnos-confirmados - Periodo valido",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-01&hasta=2025-10-31&pagina=2",
+													"protocol": "http",
+													"host": [
+														"127",
+														"0",
+														"0",
+														"1"
+													],
+													"port": "8000",
+													"path": [
+														"reportes",
+														"turnos-confirmados"
+													],
+													"query": [
+														{
+															"key": "desde",
+															"value": "2025-10-01"
+														},
+														{
+															"key": "hasta",
+															"value": "2025-10-31"
+														},
+														{
+															"key": "pagina",
+															"value": "2"
+														}
+													]
+												}
+											},
+											"_postman_previewlanguage": "",
+											"header": [],
+											"cookie": [
+												{
+													"expires": "Invalid Date",
+													"domain": "",
+													"path": ""
+												}
+											],
+											"body": ""
+										}
+									]
+								},
+								{
+									"name": "GET /reportes/turnos-confirmados - Fechas invalidas",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-31&hasta=2025-10-01",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"turnos-confirmados"
+											],
+											"query": [
+												{
+													"key": "desde",
+													"value": "2025-10-31"
+												},
+												{
+													"key": "hasta",
+													"value": "2025-10-01"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Casos de prueba para el reporte de turnos confirmados (sin paginación)"
+						},
+						{
+							"name": "6. Reportes de Estado de Personas",
+							"item": [
+								{
+									"name": "GET /reportes/estado-personas - Habilitadas",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=true",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"estado-personas"
+											],
+											"query": [
+												{
+													"key": "habilitada",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "GET /reportes/estado-personas - Inhabilitadas",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=false",
+											"protocol": "http",
+											"host": [
+												"127",
+												"0",
+												"0",
+												"1"
+											],
+											"port": "8000",
+											"path": [
+												"reportes",
+												"estado-personas"
+											],
+											"query": [
+												{
+													"key": "habilitada",
+													"value": "false"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"description": "Casos de prueba para el reporte de estado de personas"
+						}
+					]
 				}
 			],
-			"description": "Testeo de endpoints de turnos. Casos validos e invalidos: validacion de hora (9 a 17), intervalos de 30 minutos, formato de fecha. Para contar cancelaciones usar PUT /turnos/{id} con estado=cancelado."
-		},
-		{
-			"name": "Punto E",
-			"item": [
-				{
-					"name": "1. Reportes por Fecha",
-					"item": [
-						{
-							"name": "GET /reportes/turnos-por-fecha",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-por-fecha?fecha=2025-10-20",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-por-fecha"
-									],
-									"query": [
-										{
-											"key": "fecha",
-											"value": "2025-10-20"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Casos de prueba para el endpoint de reportes por fecha específica"
-				},
-				{
-					"name": "2. Reportes de Turnos Cancelados por Mes",
-					"item": [
-						{
-							"name": "GET /reportes/turnos-cancelados-por-mes",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados-por-mes",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-cancelados-por-mes"
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Caso de prueba para el reporte de turnos cancelados del mes actual"
-				},
-				{
-					"name": "3. Reportes por Persona",
-					"item": [
-						{
-							"name": "GET /reportes/turnos-por-persona",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-por-persona?dni=10000001",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-por-persona"
-									],
-									"query": [
-										{
-											"key": "dni",
-											"value": "10000001"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Casos de prueba para el reporte de turnos por persona específica"
-				},
-				{
-					"name": "4. Reportes de Personas con Turnos Cancelados",
-					"item": [
-						{
-							"name": "GET /reportes/turnos-cancelados - Minimo 5 cancelaciones",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados?min=5",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-cancelados"
-									],
-									"query": [
-										{
-											"key": "min",
-											"value": "5"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /reportes/turnos-cancelados - Sin parametro",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-cancelados",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-cancelados"
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Casos de prueba para el reporte de personas con turnos cancelados"
-				},
-				{
-					"name": "5. Reportes de Turnos Confirmados",
-					"item": [
-						{
-							"name": "GET /reportes/turnos-confirmados - Período valido",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-01&hasta=2025-10-31",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-confirmados"
-									],
-									"query": [
-										{
-											"key": "desde",
-											"value": "2025-10-01"
-										},
-										{
-											"key": "hasta",
-											"value": "2025-10-31"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /reportes/turnos-confirmados - Fechas invalidas",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/turnos-confirmados?desde=2025-10-31&hasta=2025-10-01",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"turnos-confirmados"
-									],
-									"query": [
-										{
-											"key": "desde",
-											"value": "2025-10-31"
-										},
-										{
-											"key": "hasta",
-											"value": "2025-10-01"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Casos de prueba para el reporte de turnos confirmados (sin paginación)"
-				},
-				{
-					"name": "6. Reportes de Estado de Personas",
-					"item": [
-						{
-							"name": "GET /reportes/estado-personas - Habilitadas",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=true",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"estado-personas"
-									],
-									"query": [
-										{
-											"key": "habilitada",
-											"value": "true"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /reportes/estado-personas - Inhabilitadas",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://127.0.0.1:8000/reportes/estado-personas?habilitada=false",
-									"protocol": "http",
-									"host": [
-										"127",
-										"0",
-										"0",
-										"1"
-									],
-									"port": "8000",
-									"path": [
-										"reportes",
-										"estado-personas"
-									],
-									"query": [
-										{
-											"key": "habilitada",
-											"value": "false"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"description": "Casos de prueba para el reporte de estado de personas"
-				}
-			]
+			"description": "Testeo de endpoints de turnos. Casos validos e invalidos: validacion de hora (9 a 17), intervalos de 30 minutos, formato de fecha. Para contar cancelaciones usar PUT /turnos/{id} con estado=cancelado.\n\n  \n\nNota: No se puede cargar una fecha anterior a la actual, en caso de que sea mas del 28/10 actualizar los POST"
 		}
 	],
 	"variable": [

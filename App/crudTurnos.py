@@ -1,11 +1,12 @@
 from datetime import date, time, timedelta, datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from App.schemas import turno_base
 
 from .utils import validar_fecha_pasada, validar_turno_modificable
 from .crudPersonas import validar_persona_habilitada, buscar_persona, cambiar_estado_persona
-from .models import Turno
+from .models import Turno, Persona
 from .config import HORARIO_INICIO, HORARIO_FIN, INTERVALO_TURNOS_MINUTOS, MAX_TURNOS_CANCELADOS, DIAS_LIMITE_CANCELACIONES, ESTADO_PENDIENTE, ESTADO_CONFIRMADO, ESTADO_CANCELADO, ESTADO_ASISTIDO, MIN_CANCELADOS_DEFAULT, LIMIT_PAGINACION_DEFAULT
 
 
@@ -200,9 +201,6 @@ def marcar_asistencia_turno(db: Session, turno_id: int):
 
 # punto E
 def obtener_turnos_por_fecha_con_persona(db: Session, fecha: date):
-    """Obtiene todos los turnos de una fecha especifica con informacion de la persona"""
-    from .models import Persona
-    
     turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
         Turno.fecha == fecha
     ).all()
@@ -211,27 +209,29 @@ def obtener_turnos_por_fecha_con_persona(db: Session, fecha: date):
 
 
 def obtener_turnos_cancelados_mes_actual(db: Session):
-    """Obtiene todos los turnos cancelados del mes actual"""
-    from .models import Persona
-    from datetime import datetime
-    
     fecha_actual = datetime.now()
     mes_actual = fecha_actual.month
     año_actual = fecha_actual.year
     
-    turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
+    turnos = db.query(
+        func.extract('year', Turno.fecha).label('año'),
+        func.extract('month', Turno.fecha).label('mes'),
+        func.count(Turno.id).label('cantidad'),
+        Turno, Persona
+    ).join(Persona, Turno.persona_id == Persona.id).filter(
         Turno.estado == ESTADO_CANCELADO,
-        db.func.extract('month', Turno.fecha) == mes_actual,
-        db.func.extract('year', Turno.fecha) == año_actual
+        func.extract('month', Turno.fecha) == mes_actual,
+        func.extract('year', Turno.fecha) == año_actual
+    ).group_by(
+        func.extract('year', Turno.fecha),
+        func.extract('month', Turno.fecha),
+        Turno.id, Persona.id
     ).all()
     
     return turnos
 
 
 def obtener_turnos_por_persona(db: Session, dni: str):
-    """Obtiene todos los turnos de una persona especifica por DNI"""
-    from .models import Persona
-    
     turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
         Persona.dni == dni
     ).all()
@@ -240,13 +240,10 @@ def obtener_turnos_por_persona(db: Session, dni: str):
 
 
 def obtener_personas_con_turnos_cancelados(db: Session, min_cancelados: int = MIN_CANCELADOS_DEFAULT):
-    """Obtiene personas que tienen al menos min_cancelados turnos cancelados"""
-    from .models import Persona
-    
     personas = db.query(Persona).join(Turno, Persona.id == Turno.persona_id).filter(
         Turno.estado == ESTADO_CANCELADO
     ).group_by(Persona.id).having(
-        db.func.count(Turno.id) >= min_cancelados
+        func.count(Turno.id) >= min_cancelados
     ).all()
     
     resultado = []
@@ -266,9 +263,6 @@ def obtener_personas_con_turnos_cancelados(db: Session, min_cancelados: int = MI
 
 
 def obtener_turnos_confirmados_periodo(db: Session, fecha_desde: date, fecha_hasta: date, offset: int = 0, limit: int = LIMIT_PAGINACION_DEFAULT):
-    """Obtiene turnos confirmados en un periodo con paginacion"""
-    from .models import Persona
-    
     turnos = db.query(Turno, Persona).join(Persona, Turno.persona_id == Persona.id).filter(
         Turno.estado == ESTADO_CONFIRMADO,
         Turno.fecha >= fecha_desde,
@@ -285,9 +279,6 @@ def obtener_turnos_confirmados_periodo(db: Session, fecha_desde: date, fecha_has
 
 
 def obtener_personas_por_estado(db: Session, habilitada: bool):
-    """Obtiene personas habilitadas o inhabilitadas para sacar turnos"""
-    from .models import Persona
-    
     personas = db.query(Persona).filter(Persona.habilitado == habilitada).all()
     
     return personas

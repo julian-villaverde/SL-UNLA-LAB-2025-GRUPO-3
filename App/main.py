@@ -1,10 +1,16 @@
-from datetime import date
+from datetime import date, datetime
 from fastapi import FastAPI, Request, Depends
 
-from .schemas import actualizar_turno_base, turno_base
-from .crudPersonas import  obtener_todas_personas, crear_persona, actualizar_persona, buscar_persona
-from .crudTurnos import cancelar_turno, confirmar_turno, crear_turno, eliminar_turno, listar_turnos, actualizar_turno, buscar_turno, obtener_turnos_disponibles, obtener_turnos_por_fecha_con_persona, obtener_turnos_cancelados_mes_actual, obtener_turnos_por_persona, obtener_personas_con_turnos_cancelados, obtener_turnos_confirmados_periodo, obtener_personas_por_estado
+from .config import LIMIT_PAGINACION_DEFAULT
+from .crudPersonas import obtener_todas_personas, crear_persona, actualizar_persona, buscar_persona
+from .crudTurnos import (cancelar_turno, confirmar_turno, crear_turno, eliminar_turno, listar_turnos, 
+                        actualizar_turno, buscar_turno, obtener_turnos_disponibles, 
+                        obtener_turnos_por_fecha_con_persona, obtener_turnos_cancelados_mes_actual, 
+                        obtener_turnos_por_persona, obtener_personas_con_turnos_cancelados, 
+                        obtener_turnos_confirmados_periodo, obtener_personas_por_estado)
 from .database import Base, engine
+from .models import Turno
+from .schemas import actualizar_turno_base, turno_base
 from .utils import get_db, calcular_edad, validar_formato_fecha
 
 
@@ -212,7 +218,6 @@ def eliminar_persona(id: int):
     persona = buscar_persona(db, id)
     
     # Verificar si la persona tiene turnos asociados
-    from .models import Turno
     turnos_asociados = db.query(Turno).filter(Turno.persona_id == id).count()
     
     if turnos_asociados > 0:
@@ -253,29 +258,37 @@ def reporte_turnos_por_fecha(fecha: str, db = Depends(get_db)):
 
 @app.get("/reportes/turnos-cancelados-por-mes")
 def reporte_turnos_cancelados_mes(db = Depends(get_db)):
-    """Reporte de turnos cancelados del mes actual"""
-    from datetime import datetime
-    
+    """Reporte de turnos cancelados del mes actual con GROUP BY"""
     turnos = obtener_turnos_cancelados_mes_actual(db)
     fecha_actual = datetime.now()
     meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
              "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
     
-    return {
-        "anio": fecha_actual.year,
-        "mes": meses[fecha_actual.month - 1],
-        "cantidad": len(turnos),
-        "turnos": [
-            {
-                "id": turno.id,
-                "persona_id": turno.persona_id,
-                "fecha": str(turno.fecha),
-                "hora": str(turno.hora),
-                "estado": turno.estado
-            }
-            for turno, persona in turnos
-        ]
-    }
+    # Si hay resultados, tomar el primer grupo (debería ser solo uno para el mes actual)
+    if turnos:
+        año, mes, cantidad, turno, persona = turnos[0]
+        return {
+            "anio": int(año),
+            "mes": meses[int(mes) - 1],
+            "cantidad": cantidad,
+            "turnos": [
+                {
+                    "id": t.id,
+                    "persona_id": t.persona_id,
+                    "fecha": str(t.fecha),
+                    "hora": str(t.hora),
+                    "estado": t.estado
+                }
+                for año, mes, cantidad, t, p in turnos
+            ]
+        }
+    else:
+        return {
+            "anio": fecha_actual.year,
+            "mes": meses[fecha_actual.month - 1],
+            "cantidad": 0,
+            "turnos": []
+        }
 
 
 @app.get("/reportes/turnos-por-persona")
@@ -347,7 +360,6 @@ def reporte_turnos_confirmados(desde: str, hasta: str, pagina: int = 1, db = Dep
     if fecha_desde > fecha_hasta:
         return {"error": "La fecha 'desde' debe ser anterior a la fecha 'hasta'"}
     
-    from .config import LIMIT_PAGINACION_DEFAULT
     offset = (pagina - 1) * LIMIT_PAGINACION_DEFAULT
     turnos, total = obtener_turnos_confirmados_periodo(db, fecha_desde, fecha_hasta, offset, LIMIT_PAGINACION_DEFAULT)
     
